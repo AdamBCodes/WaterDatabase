@@ -2,7 +2,7 @@
 # Author: Adam Barnard   #
 # Creation Date: 5/27/22 #
 ##########################
-from website import create_app, create_admin
+from website import create_app
 
 app = create_app()
 
