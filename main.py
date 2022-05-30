@@ -8,5 +8,3 @@ app = create_app()
 
 if __name__ == '__main__':
     app.run(debug=True)
-    #Creates Admin if it hasnt been already
-    create_admin()

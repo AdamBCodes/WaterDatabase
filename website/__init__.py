@@ -36,14 +36,3 @@ def create_app():
 def create_database(app):
     if not os.path.exists("website/" + DB_NAME):
         db.create_all(app=app)
-
-#No Use Right Now
-def create_admin():
-    if len(models.users.query.all()) < 1:
-        id = str(uuid4())
-        username = "admin"
-        password = md5("1234".encode("utf-8")).hexdigest()
-        admin = True
-        usr = users(id, username, password, admin)
-        db.session.add(usr)
-        db.session.commit()
