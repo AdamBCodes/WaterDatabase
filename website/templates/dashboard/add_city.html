@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Add City{% endblock %}
+{% block content %}
+    <form method="POST">
+        <input type="text" name="cityName" placeholder="City Name" />
+        <input type="submit" value="Create City" />
+        {{ message }}
+    </form>
+{% endblock %}

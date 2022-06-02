@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, session, url_for, redirect, request, session
+from flask import Blueprint, render_template, url_for, redirect, request, session
 from uuid import uuid4
 from hashlib import md5
-from .models import users
+from .models import users, cities, streets
 from . import db
 
 views = Blueprint("views", __name__, static_folder="static", template_folder="templates")
@@ -18,17 +18,50 @@ def home():
 #Page to Add Cities to database
 @views.route("/add_city", methods=["GET", "POST"])
 def add_city():
-    return render_template("add_city")
+    if request.method == "POST":
+        cityName = request.form["cityName"]
+        cityExists = cities.query.filter_by(name=cityName).first()
+        if cityExists:
+            message = "City Already Exists"
+            return render_template("add_city.html", message=message)
+        else:
+            message="City Created Successfully"
+            city = cities(cityName)
+            db.session.add(city)
+            db.session.commit()
+            return render_template("add_city.html", message=message)
+    else:
+        return render_template("add_city.html")
 
 #Page to Add Streets to database
 @views.route("/add_street", methods=["GET", "POST"])
 def add_street():
-    return render_template("add_street")
+    allCities = cities.query.all()
+    #Checks if any cities are in the database
+    if len(allCities) > 0:
+        if request.method == "POST":
+            cityName = request.form["cityName"]
+            revisedName = request.form["streetName"]+" "+request.form["streetType"]
+            streetExists = streets.query.filter_by(city=cityName, name=revisedName).first()
+            #Check if street already exists
+            if streetExists:
+                message = "Street Already Exists"
+                return render_template("add_street.html", allCities=allCities, message=message)
+            else:
+                street = streets(revisedName, cityName)
+                db.session.add(street)
+                db.session.commit()
+                message="street was created"
+                return render_template("add_street.html", allCities=allCities, message=message)
+        else:
+            return render_template("add_street.html", allCities = allCities)
+    else:
+        return redirect(url_for("views.add_city"))
 
 #Page to Add Addresses to database
 @views.route("/add_address", methods=["GET", "POST"])
 def add_address():
-    return render_template("add_address")
+    return render_template("add_address.html")
 
  
 
@@ -36,12 +69,21 @@ def add_address():
 #Creates Users(Rework Later)
 @views.route("/create_user/<username>/<password>")
 def create_user(username, password):
-    id = str(uuid4())
-    password = md5(password.encode("utf-8")).hexdigest()
-    usr = users(id, username, password, False)
-    db.session.add(usr)
-    db.session.commit()
-    return redirect(url_for("auth.login"))
+    if "userid" in session:
+        user = users.query.filter_by(id=session["userid"]).first()
+        isAdmin = user.admin
+        if isAdmin:
+            id = str(uuid4())
+            #Encrypts password with md5 hash
+            password = md5(password.encode("utf-8")).hexdigest()
+            usr = users(id, username, password, False)
+            db.session.add(usr)
+            db.session.commit()
+            return redirect(url_for("views.home"))
+        else:
+            return redirect(url_for("auth.login"))
+    else:
+        return redirect(url_for("public.index"))
 
 #Creates Admin
 @views.route("/create_admin")
@@ -62,4 +104,11 @@ def show_users():
         print(user.username)
         print(user.password)
         print(user.id)
+    return "Check Logs"
+
+#Shows Users(Test)
+@views.route("/show_cities")
+def show_cities():
+    for city in cities.query.all():
+        print(city.name)
     return "Check Logs"

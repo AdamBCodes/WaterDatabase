@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Add Street{% endblock %}
+{% block content %}
+    <form method="POST">
+        <select name="cityName">
+            {% for c in allCities %}
+                <option>{{ c.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="streetName" placeholder="Street Name" />
+        <select name="streetType">
+            <option>Ave</option>
+            <option>Bldg</option>
+            <option>Bvld</option>
+            <option>Cres</option>
+            <option>Crt</option>
+            <option>Dr</option>
+            <option>Pl</option>
+            <option>Rd</option>
+            <option>St</option>
+            <option>Stn</option>
+            <option>Sqr</option>
+        </select>
+        <input type="submit" value="Create Street" />
+        {{ message }}
+    </form>
+{% endblock %}

@@ -15,8 +15,10 @@ def create_app():
     #Registers All Blueprints
     from .auth import auth
     from .views import views
-    app.register_blueprint(auth, url_prefix="/")
-    app.register_blueprint(views, url_prefix="/")
+    from .public import public
+    app.register_blueprint(auth, url_prefix="/dashboard")
+    app.register_blueprint(views, url_prefix="/dashboard")
+    app.register_blueprint(public, url_prefix="/")
 
     #App Configs
     app.config["SECRET_KEY"] = "hello"

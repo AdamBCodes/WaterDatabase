@@ -19,7 +19,7 @@ class cities(db.Model):
     name = db.Column("name", db.VARCHAR(255), nullable=False)
     
     def __init__(self, name):
-        self._name = name
+        self.name = name
 
 #Streets Table
 class streets(db.Model):
