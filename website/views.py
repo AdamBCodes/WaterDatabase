@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template, url_for, redirect, request, session
+from werkzeug.utils import secure_filename
+import os
 from uuid import uuid4
 from hashlib import md5
 from .models import users, cities, streets, addresses
@@ -16,6 +18,8 @@ def home():
     return redirect(url_for("auth.login"))
 
 #Page to Add Cities to database
+
+
 @views.route("/add_city", methods=["GET", "POST"])
 def add_city():
     if "userid" in session:
@@ -77,12 +81,18 @@ def add_address(city):
     if request.method == "POST":
         streetnum = request.form["streetnum"]
         street = request.form["street"]
+        image = request.files["img"]
+
         addressExists = addresses.query.filter_by(city=city, street=street,streetnum=streetnum).first()
         #Checks if Address already exists
         if addressExists:
             message="Address Already Exists"
             return render_template("add_address.html", allStreets=allStreets, message=message)
-        address = addresses(streetnum,street,city)
+        #Gets File Extension for image
+        extension = os.path.splitext(image.filename)[1]
+        image.filename = (streetnum+street+extension).replace(" ", "")
+        image.save("./website/static/imgs/"+secure_filename(image.filename))
+        address = addresses(streetnum, street, city, image.filename)
         db.session.add(address)
         db.session.commit()
         message="Successfully Created Address"
@@ -99,7 +109,7 @@ def add_address(city):
 
  
 
-#Tests
+#Tests########################################################################
 #Creates Users(Rework Later)
 @views.route("/create_user/<username>/<password>")
 def create_user(username, password):
@@ -140,9 +150,10 @@ def show_users():
         print(user.id)
     return "Check Logs"
 
-#Shows Users(Test)
+#Shows Cities(Test)
 @views.route("/show_cities")
 def show_cities():
     for city in cities.query.all():
         print(city.name)
     return "Check Logs"
+################################################################################################
