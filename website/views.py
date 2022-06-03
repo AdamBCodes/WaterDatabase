@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, url_for, redirect, request, session
 from uuid import uuid4
 from hashlib import md5
-from .models import users, cities, streets
+from .models import users, cities, streets, addresses
 from . import db
 
-views = Blueprint("views", __name__, static_folder="static", template_folder="templates")
+views = Blueprint("views", __name__, static_folder="static", template_folder="templates/dashboard")
 
 
 #Home Page
@@ -18,27 +18,33 @@ def home():
 #Page to Add Cities to database
 @views.route("/add_city", methods=["GET", "POST"])
 def add_city():
-    if request.method == "POST":
-        cityName = request.form["cityName"]
-        cityExists = cities.query.filter_by(name=cityName).first()
-        if cityExists:
-            message = "City Already Exists"
-            return render_template("add_city.html", message=message)
+    if "userid" in session:
+        #On POST
+        if request.method == "POST":
+            cityName = request.form["cityName"]
+            cityExists = cities.query.filter_by(name=cityName).first()
+            if cityExists:
+                message = "City Already Exists"
+                return render_template("add_city.html", message=message)
+            else:
+                message="City Created Successfully"
+                city = cities(cityName)
+                db.session.add(city)
+                db.session.commit()
+                return render_template("add_city.html", message=message)
+        #On GET
         else:
-            message="City Created Successfully"
-            city = cities(cityName)
-            db.session.add(city)
-            db.session.commit()
-            return render_template("add_city.html", message=message)
+            return render_template("add_city.html")
     else:
-        return render_template("add_city.html")
+        return redirect(url_for("auth.login"))
 
 #Page to Add Streets to database
 @views.route("/add_street", methods=["GET", "POST"])
 def add_street():
+    #Gets all cities from the database
     allCities = cities.query.all()
-    #Checks if any cities are in the database
-    if len(allCities) > 0:
+    if "userid" in session:
+        #On POST
         if request.method == "POST":
             cityName = request.form["cityName"]
             revisedName = request.form["streetName"]+" "+request.form["streetType"]
@@ -53,14 +59,42 @@ def add_street():
                 db.session.commit()
                 message="street was created"
                 return render_template("add_street.html", allCities=allCities, message=message)
+        #On GET
         else:
-            return render_template("add_street.html", allCities = allCities)
+            #Checks if any cities are in the database
+            if len(allCities) < 0:
+                return redirect(url_for("views.add_city"))
+            else:
+                return render_template("add_street.html", allCities=allCities)
     else:
-        return redirect(url_for("views.add_city"))
+        return redirect(url_for("auth.login"))
 
 #Page to Add Addresses to database
-@views.route("/add_address", methods=["GET", "POST"])
-def add_address():
+@views.route("/add_address/<city>", methods=["GET", "POST"])
+def add_address(city):
+    allStreets = streets.query.filter_by(city=city).all()
+    #On POST
+    if request.method == "POST":
+        streetnum = request.form["streetnum"]
+        street = request.form["street"]
+        addressExists = addresses.query.filter_by(city=city, street=street,streetnum=streetnum).first()
+        #Checks if Address already exists
+        if addressExists:
+            message="Address Already Exists"
+            return render_template("add_address.html", allStreets=allStreets, message=message)
+        address = addresses(streetnum,street,city)
+        db.session.add(address)
+        db.session.commit()
+        message="Successfully Created Address"
+        return render_template("add_address.html", allStreets=allStreets, message=message)
+    #On GET
+    else:
+        if len(allStreets) > 0:
+            return render_template("add_address.html", allStreets=allStreets)
+        else:
+            return redirect(url_for("views.add_street"))
+            
+            
     return render_template("add_address.html")
 
  
@@ -83,7 +117,7 @@ def create_user(username, password):
         else:
             return redirect(url_for("auth.login"))
     else:
-        return redirect(url_for("public.index"))
+        return redirect(url_for("auth.login"))
 
 #Creates Admin
 @views.route("/create_admin")

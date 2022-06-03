@@ -37,8 +37,16 @@ class addresses(db.Model):
     streetnum = db.Column("streetnum", db.VARCHAR(255), nullable=False)
     street = db.Column("street", db.VARCHAR(255), nullable=False)
     city = db.Column("city", db.VARCHAR(255), nullable=False)
+    image = db.Column("image", db.VARCHAR(255), nullable=False)
 
-    def __init__(self, streetnum, street, city):
+    def __init__(self, streetnum, street, city, image):
         self.streetnum = streetnum
         self.street = street
         self.city = city
+        self.image = image
+
+#Changes Table
+#class changes(db.Model):
+    #id = db.Column("id", db.Integer, primary_key=True, nullable=False)
+    #userID = db.Column("userid", db.VARCHAR(255), nullable=False)
+    #date = db.Column("date", db.DateTime, nullable=False)
