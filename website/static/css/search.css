@@ -1,0 +1,22 @@
+.box{
+    position: absolute;
+    padding: 0;
+    margin: 0% 20%;
+}
+.box input {
+    border-radius: 10px;
+    border: solid 1px black;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    text-align: center;
+    width: 250px;
+    height: 45px;
+}
+.box i{
+    z-index: 1;
+    position: absolute;
+    color: black;
+    left: 90px;
+    top: 15px;
+}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Make Changes{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
+    <div class="main">
+        <div class="box">
+            <i class="fa-solid fa-magnifying-glass icon"></i>
+            <input type="text" class="input-field" placeholder="Search" />
+        </div>
+    </div>
+{% endblock %}

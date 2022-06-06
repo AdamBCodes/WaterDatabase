@@ -18,8 +18,6 @@ def home():
     return redirect(url_for("auth.login"))
 
 #Page to Add Cities to database
-
-
 @views.route("/add_city", methods=["GET", "POST"])
 def add_city():
     if "userid" in session:
@@ -41,6 +39,7 @@ def add_city():
             return render_template("add_city.html")
     else:
         return redirect(url_for("auth.login"))
+
 
 #Page to Add Streets to database
 @views.route("/add_street", methods=["GET", "POST"])
@@ -73,6 +72,7 @@ def add_street():
     else:
         return redirect(url_for("auth.login"))
 
+
 #Page to Add Addresses to database
 @views.route("/add_address/<city>", methods=["GET", "POST"])
 def add_address(city):
@@ -103,11 +103,15 @@ def add_address(city):
             return render_template("add_address.html", allStreets=allStreets)
         else:
             return redirect(url_for("views.add_street"))
-            
-            
-    return render_template("add_address.html")
 
- 
+
+@views.route("/make_changes")
+def make_changes():
+    if "userid" in session:
+        user = users.query.filter_by(id=session["userid"]).first()
+        return render_template("make_changes.html", admin=user.admin)
+    else:
+        return redirect(url_for("auth.login"))
 
 #Tests########################################################################
 #Creates Users(Rework Later)

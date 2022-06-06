@@ -1,4 +1,9 @@
-<h1>Hello {{ username }}</h1>
-{% if admin == True %}
-    <p>You are an Admin</p>
-{% endif %}
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <h1>Hello {{ username }}</h1>
+    {% if admin %}
+        <p>You are an Admin</p>
+    {% endif %}
+{% endblock %}

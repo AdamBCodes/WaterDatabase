@@ -2,13 +2,15 @@
 {% block title %}Add Street{% endblock %}
 {% block content %}
     <form method="POST">
-        <select name="cityName">
+        <select name="cityName" required>
+            <option disabled selected value> -- Select A City -- </option>
             {% for c in allCities %}
                 <option>{{ c.name }}</option>
             {% endfor %}
         </select>
-        <input type="text" name="streetName" placeholder="Street Name" />
-        <select name="streetType">
+        <input type="text" name="streetName" placeholder="Street Name" required/>
+        <select name="streetType" required>
+            <option disabled selected value> -- Select A Type -- </option>
             <option>Ave</option>
             <option>Bldg</option>
             <option>Bvld</option>
