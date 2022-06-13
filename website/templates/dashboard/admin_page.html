@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Page{% endblock %}
+{% block content %}
+    <div class="block">
+        <h3>Create User</h3>
+        <form method="POST">
+            <input type="text" name="username" placeholder="Username" />
+            <input type="password" name="password" placeholder="Password"/>
+            <br />
+            <input type="submit" value="Create User" />
+        </form>
+    </div>
+    <div class="block">
+        <h3>Create City</h3>
+        <form method="POST">
+            <input type="text" name="cityName" placeholder="City Name" required />
+            <br />
+            <input type="submit" value="Create City" />
+            {{ message }}
+        </form>
+    </div>
+    <div class="block">
+        <h3>Create Street</h3>
+        <form>
+            {% if allCities|length == 0 %}
+                <h4>No Cities Found</h4>
+            {% else %}
+                <select name="cityName" required>
+                    <option disabled selected value> -- Select A City -- </option>
+                    {% for c in allCities %}
+                        <option>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+                <br />
+                <input type="text" name="streetName" placeholder="Street Name" required/>
+                <select name="streetType" required>
+                    <option disabled selected value> -- Select A Type -- </option>
+                    <option>Ave</option>
+                    <option>Bldg</option>
+                    <option>Bvld</option>
+                    <option>Cres</option>
+                    <option>Crt</option>
+                    <option>Dr</option>
+                    <option>Pl</option>
+                    <option>Rd</option>
+                    <option>St</option>
+                    <option>Stn</option>
+                    <option>Sqr</option>
+                </select>
+                <input type="submit" value="Create Street" />
+            </form>
+            {% endif %}
+    </div>
+{% endblock %}

@@ -4,6 +4,7 @@
         <title>{% block title %}{%endblock%}</title>
         <script src="https://kit.fontawesome.com/86f9c65e39.js" crossorigin="anonymous"></script>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}">
     </head>
     <body>
         <div class="sidebar">
@@ -11,9 +12,13 @@
                 <i class="fa-solid fa-droplet fa-2x"></i>
             </div>
             <a href="{{ url_for('views.home') }}">Dashboard</a>
-            <a href="{{ url_for('views.make_changes') }}">Make Changes</a>
+            <a href="{{ url_for('views.make_changes') }}">Addresses</a>
             <a href="#"></a>
             <a href="#"></a>
+            {% if admin %}
+                <hr />
+                <a href="{{ url_for('views.admin_page') }}">Admin</a>
+            {% endif %}
         </div>
         <div class="main">
             {% block content %}

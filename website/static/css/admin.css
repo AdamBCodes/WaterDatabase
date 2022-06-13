@@ -1,0 +1,30 @@
+.block{
+    display:block;
+    border-radius: 5px;
+    width: 200px;
+    height: 150px;
+    background-color: gray;
+    color:white
+}
+.block h3{
+    padding-top: 15px;
+}
+input[type="text"]{
+    margin: 5px 0px 5px 0px;
+    width: 95px;
+}
+input[type="password"]{
+    width: 95px;
+    margin-bottom: 5px;
+}
+select[name="streetType"]{
+    width:50px;
+}
+input[type="submit"]{
+    background: #00ff00;
+    text-decoration: none;
+    border: 0;
+    box-shadow: none;
+    border-radius: 5px;
+    color: white;
+}

@@ -20,3 +20,50 @@
     left: 90px;
     top: 15px;
 }
+.addresses{
+    margin-left: 38%;
+    margin-top: 50px;
+}
+.address{
+    text-align: left;
+    display: block;
+    background-color: gray;
+    color: white;
+    width: 400px;
+    height: 100px;
+    margin-top: 15px;
+}
+.address h3{
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    width: 150px;
+    height: 20px;
+}
+.address h4{
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    width: 150px;
+    height: 20px;
+    text-align: center;
+}
+.address img{
+    display:inline-block;
+    width: 40%;
+    height: 80%;
+}
+button{
+    margin-left: 450px;
+    margin-top: 4px;
+    background-color: #00ff00;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    box-shadow: none;
+    width: 50px;
+    height: 40px;
+}
+button:hover{
+    cursor: pointer;
+}

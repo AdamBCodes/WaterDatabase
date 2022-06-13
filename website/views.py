@@ -1,3 +1,10 @@
+############################
+#        Views Page        #
+# Author: Adam Barnard     #
+# Date:   5/27/22          #
+############################
+
+
 from flask import Blueprint, render_template, url_for, redirect, request, session
 from werkzeug.utils import secure_filename
 import os
@@ -44,9 +51,9 @@ def add_city():
 #Page to Add Streets to database
 @views.route("/add_street", methods=["GET", "POST"])
 def add_street():
-    #Gets all cities from the database
-    allCities = cities.query.all()
     if "userid" in session:
+        #Gets all cities from the database
+        allCities = cities.query.all()
         #On POST
         if request.method == "POST":
             cityName = request.form["cityName"]
@@ -76,42 +83,63 @@ def add_street():
 #Page to Add Addresses to database
 @views.route("/add_address/<city>", methods=["GET", "POST"])
 def add_address(city):
-    allStreets = streets.query.filter_by(city=city).all()
-    #On POST
-    if request.method == "POST":
-        streetnum = request.form["streetnum"]
-        street = request.form["street"]
-        image = request.files["img"]
-
-        addressExists = addresses.query.filter_by(city=city, street=street,streetnum=streetnum).first()
-        #Checks if Address already exists
-        if addressExists:
-            message="Address Already Exists"
+    if "userid" in session:
+        allStreets = streets.query.filter_by(city=city).all()
+        #On POST
+        if request.method == "POST":
+            streetnum = request.form["streetnum"]
+            street = request.form["street"]
+            image = request.files["img"]
+            addressExists = addresses.query.filter_by(city=city, street=street,streetnum=streetnum).first()
+            #Checks if Address already exists
+            if addressExists:
+                message="Address Already Exists"
+                return render_template("add_address.html", allStreets=allStreets, message=message)
+            #Gets File Extension for image
+            if(image.filename != ""):
+                extension = os.path.splitext(image.filename)[1]
+                image.filename = (streetnum+street+extension).replace(" ", "")
+                image.save("./website/static/imgs/"+secure_filename(image.filename))
+                address = addresses(streetnum, street, city, image.filename)
+            else:
+                address = addresses(streetnum, street, city, "placeholder.png")
+            print(address.image)
+            db.session.add(address)
+            db.session.commit()
+            message="Successfully Created Address"
             return render_template("add_address.html", allStreets=allStreets, message=message)
-        #Gets File Extension for image
-        extension = os.path.splitext(image.filename)[1]
-        image.filename = (streetnum+street+extension).replace(" ", "")
-        image.save("./website/static/imgs/"+secure_filename(image.filename))
-        address = addresses(streetnum, street, city, image.filename)
-        db.session.add(address)
-        db.session.commit()
-        message="Successfully Created Address"
-        return render_template("add_address.html", allStreets=allStreets, message=message)
-    #On GET
-    else:
-        if len(allStreets) > 0:
-            return render_template("add_address.html", allStreets=allStreets)
+        #On GET
         else:
-            return redirect(url_for("views.add_street"))
+            if len(allStreets) > 0:
+                return render_template("add_address.html", allStreets=allStreets)
+            else:
+                return redirect(url_for("views.add_street"))
+    else:
+        return redirect(url_for("auth.login"))
 
 
 @views.route("/make_changes")
 def make_changes():
     if "userid" in session:
         user = users.query.filter_by(id=session["userid"]).first()
-        return render_template("make_changes.html", admin=user.admin)
+        address = addresses.query.all()
+        return render_template("make_changes.html", admin=user.admin, allAddresses=address)
     else:
         return redirect(url_for("auth.login"))
+
+@views.route("/admin")
+def admin_page():
+    if 'userid' in session:
+        user = users.query.filter_by(id=session["userid"]).first()
+        allCities = cities.query.all()
+        allStreets = streets.query.all()
+        if(user.admin):
+            return render_template("admin_page.html", admin=user.admin, allCities=allCities, allStreets=allStreets)
+        else:
+            return redirect(url_for("views.home"))
+    else:
+        return redirect(url_for("auth.login"))
+
 
 #Tests########################################################################
 #Creates Users(Rework Later)

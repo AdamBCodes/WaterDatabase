@@ -9,4 +9,18 @@
             <input type="text" class="input-field" placeholder="Search" />
         </div>
     </div>
+    <button>Add New</button>
+    <div class="addresses">
+        {% if allAddresses|length != 0 %}
+            {% for a in allAddresses %}
+                <div class="address">
+                    <image src="{{url_for('static', filename='imgs/'+a.image)}}" />
+                    <h3>{{a.streetnum}} {{a.street}}</h3>
+                    <h4>{{a.city}}</h4>
+                </div>
+            {% endfor %}
+        {% else %}
+            <h1>No Addresses Found</h1>
+        {% endif %}
+    </div>
 {% endblock %}

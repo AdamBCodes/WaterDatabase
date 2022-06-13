@@ -1,3 +1,10 @@
+###########################
+#        Auth Page        #
+# Author: Adam Barnard    #
+# Date:   5/27/22         #
+###########################
+
+
 #File to seperate Authentication from main pages
 from flask import Blueprint, render_template, url_for, redirect, request, session
 from hashlib import md5
