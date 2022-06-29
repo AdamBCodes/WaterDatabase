@@ -4,7 +4,7 @@
 {% block content %}
     <div class="block">
         <h3>Create User</h3>
-        <form method="POST">
+        <form method="POST" action="/create_user">
             <input type="text" name="username" placeholder="Username" />
             <input type="password" name="password" placeholder="Password"/>
             <br />
@@ -13,7 +13,7 @@
     </div>
     <div class="block">
         <h3>Create City</h3>
-        <form method="POST">
+        <form method="POST" action="/add_city">
             <input type="text" name="cityName" placeholder="City Name" required />
             <br />
             <input type="submit" value="Create City" />
@@ -22,11 +22,11 @@
     </div>
     <div class="block">
         <h3>Create Street</h3>
-        <form>
+        <form method="POST" action="/add_street">
             {% if allCities|length == 0 %}
                 <h4>No Cities Found</h4>
             {% else %}
-                <select name="cityName" required>
+                <select name="cName" required>
                     <option disabled selected value> -- Select A City -- </option>
                     {% for c in allCities %}
                         <option>{{ c.name }}</option>
