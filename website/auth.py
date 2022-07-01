@@ -6,15 +6,26 @@
 
 
 #File to seperate Authentication from main pages
+from uuid import uuid4
 from flask import Blueprint, render_template, url_for, redirect, request, session
 from hashlib import md5
 from .models import users
+from . import db
 
 auth = Blueprint("auth", __name__, static_folder="static", template_folder="templates/auth")
 
 #Login Page
 @auth.route("/login", methods=["GET", "POST"])
 def login():
+    adminExists = users.query.filter_by(username="admin").count()
+    if(adminExists <= 0):
+        id = str(uuid4())
+        username = "admin"
+        password = md5("1234".encode("utf-8")).hexdigest()
+        admin = True
+        usr = users(id, username, password, admin)
+        db.session.add(usr)
+        db.session.commit()
     #Checks if already logged in
     if "user" in session:
         return redirect(url_for("home"))

@@ -118,7 +118,6 @@ def add_address(city):
     else:
         return redirect(url_for("auth.login"))
 
-
 @views.route("/addresses")
 def addressViewer():
     if "userid" in session:
@@ -131,11 +130,68 @@ def addressViewer():
     else:
         return redirect(url_for("auth.login"))
 
-@views.route("/make_changes")
-def make_changes():
+@views.route("/make_changes/<id>", methods=["GET", "POST"])
+def make_changes(id):
     if "userid" in session:
         user = users.query.filter_by(id=session["userid"]).first()
-        return render_template("make_changes.html", admin=user.admin)
+        address = addresses.query.filter_by(id=id).first()
+        street = streets.query.filter_by(city=address.city).all() 
+        if request.method == "POST":
+            NoAddressExists = addresses.query.filter_by(streetnum=request.form["streetnum"], street=request.form["street"], city=address.city).count()
+            extension = os.path.splitext(address.image)[1]
+            if(address.streetnum != request.form["streetnum"] or address.street != request.form["street"]):
+                if(NoAddressExists <= 0):
+                    rename = (request.form["streetnum"] + request.form["street"]).replace(" ", "")
+                    oldname = (address.streetnum + address.street).replace(" ", "")
+                    address.streetnum = request.form["streetnum"]
+                    address.street = request.form["street"]              
+                    dir = "./website/static/imgs/"
+                    print(dir+rename+".png")
+                    print(dir+rename+".jpeg")
+                    print(dir+rename+".jpg")
+
+                    if((os.path.exists(dir+oldname+".png")) or (os.path.exists(dir+oldname+".jpeg")) or (os.path.exists(dir+oldname+".jpg"))):
+                        os.rename("./website/static/imgs/"+address.image, "./website/static/imgs/"+rename+extension)
+                    address.image = rename+extension
+                else:
+                    return render_template("make_changes.html", s=street, a=address, admin=user.admin, message="Address Already Exists")
+
+            image = request.files["img"]
+            if(image.filename != ""):
+                image.filename = (address.streetnum+address.street+extension).replace(" ", "")
+                image.save("./website/static/imgs/"+image.filename)
+
+                resized = Image.open("./website/static/imgs/"+image.filename)
+                resized = resized.resize((400, 400))
+                resized.save("./website/static/imgs/"+secure_filename(image.filename))
+            
+            db.session.commit()
+            return render_template("make_changes.html", s=street, a=address, admin=user.admin, message="Address Successfully Modified")
+        else:
+            return render_template("make_changes.html", s=street, a=address, admin=user.admin)
+    else:
+        return redirect(url_for("auth.login"))
+
+@views.route("/delete_address/<id>")
+def delete_address(id):
+    if "userid" in session:
+        user = users.query.filter_by(id=session["userid"]).first()
+        if user.admin:
+            address = addresses.query.filter_by(id=id).first()
+            db.session.delete(address)
+            db.session.commit()
+            return redirect(url_for("views.addressViewer"))
+        else:
+            return redirect(url_for("views.home"))
+    else:
+         return redirect(url_for("auth.login"))
+
+@views.route("/address/<id>")
+def address(id):
+    if "userid" in session:
+        user = users.query.filter_by(id=session["userid"]).first()
+        address = addresses.query.filter_by(id=id).first()
+        return render_template("address.html", a = address, admin=user.admin)
     else:
         return redirect(url_for("auth.login"))
 

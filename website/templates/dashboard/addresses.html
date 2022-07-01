@@ -15,7 +15,7 @@
             {% for a in allAddresses %}
                 <div class="address">
                     <image src="{{url_for('static', filename='imgs/'+a.image)}}" />
-                    <h3>{{a.streetnum}} {{a.street}}</h3>
+                    <h3><a href="{{url_for('views.address', id=a.id)}}">{{a.streetnum}} {{a.street}}</a></h3>
                     <h4>{{a.city}}</h4>
                 </div>
             {% endfor %}

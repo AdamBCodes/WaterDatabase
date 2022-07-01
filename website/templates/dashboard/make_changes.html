@@ -1,1 +1,32 @@
 {% extends "base.html" %}
+
+{% block content %}
+    <script>
+        var loadFile = function(event) {
+            var reader = new FileReader();
+            reader.onload = function(){
+                var output = document.getElementById('output');
+                output.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        };
+        
+    </script>
+
+    <img src="{{url_for('static', filename='imgs/'+a.image)}}" id="output" style="width: 20%; height: 20%;" />
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="img" onchange="loadFile(event)" accept="image/*"/>
+        <input name="streetnum" value="{{ a.streetnum }}"/>
+        <select name="street">
+            {% for street in s %}
+                {% if street.name == a.street %}
+                    <option selected>{{ street.name }}</option>
+                {% else %}
+                    <option>{{ street.name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <input type="submit" value="Change"/>
+    </form>
+    <p>{{ message }}</p>
+{% endblock %}
