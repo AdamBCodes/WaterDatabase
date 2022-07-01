@@ -146,9 +146,6 @@ def make_changes(id):
                     address.streetnum = request.form["streetnum"]
                     address.street = request.form["street"]              
                     dir = "./website/static/imgs/"
-                    print(dir+rename+".png")
-                    print(dir+rename+".jpeg")
-                    print(dir+rename+".jpg")
 
                     if((os.path.exists(dir+oldname+".png")) or (os.path.exists(dir+oldname+".jpeg")) or (os.path.exists(dir+oldname+".jpg"))):
                         os.rename("./website/static/imgs/"+address.image, "./website/static/imgs/"+rename+extension)
@@ -178,6 +175,10 @@ def delete_address(id):
         user = users.query.filter_by(id=session["userid"]).first()
         if user.admin:
             address = addresses.query.filter_by(id=id).first()
+            filename = os.path.splitext(address.image)[0]
+            dir = "./website/static/imgs/"
+            if(((os.path.exists(dir+filename+".png")) or (os.path.exists(dir+filename+".jpeg")) or (os.path.exists(dir+filename+".jpg"))) and address.image != "placeholder.png"):
+                os.remove(dir+address.image)
             db.session.delete(address)
             db.session.commit()
             return redirect(url_for("views.addressViewer"))
@@ -240,19 +241,7 @@ def create_user():
 def error():
     return render_template("error.html")
 
-#Tests########################################################################
-#Creates Admin
-@views.route("/create_admin")
-def create_admin():
-    id = str(uuid4())
-    username = "admin"
-    password = md5("1234".encode("utf-8")).hexdigest()
-    admin = True
-    usr = users(id, username, password, admin)
-    db.session.add(usr)
-    db.session.commit()
-    return redirect(url_for("auth.login"))
-    
+#Testing########################################################################################
 #Shows Users(Test)
 @views.route("/show_users")
 def show_users():
