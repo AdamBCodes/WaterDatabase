@@ -147,14 +147,17 @@ def make_changes(id):
         address = addresses.query.filter_by(id=id).first()
         street = streets.query.filter_by(city=address.city).all() 
         if request.method == "POST":
+            #Checks if Address Exists
             NoAddressExists = addresses.query.filter_by(streetnum=request.form["streetnum"], street=request.form["street"], city=address.city).count()
             extension = os.path.splitext(address.image)[1]
+            #Checks only if streetnum or streetAddress has been changed
             if(address.streetnum != request.form["streetnum"] or address.street != request.form["street"]):
                 if(NoAddressExists <= 0):
+                    #Changes Data
                     rename = (request.form["streetnum"] + request.form["street"]).replace(" ", "")
                     oldname = (address.streetnum + address.street).replace(" ", "")
                     address.streetnum = request.form["streetnum"]
-                    address.street = request.form["street"]              
+                    address.street = request.form["street"]
                     dir = "./website/static/imgs/"
 
                     if((os.path.exists(dir+oldname+".png")) or (os.path.exists(dir+oldname+".jpeg")) or (os.path.exists(dir+oldname+".jpg"))):
@@ -162,8 +165,8 @@ def make_changes(id):
                     address.image = rename+extension
                 else:
                     return render_template("make_changes.html", s=street, a=address, admin=user.admin, message="Address Already Exists")
-
             image = request.files["img"]
+            #Resizes Image if it exists
             if(image.filename != ""):
                 image.filename = (address.streetnum+address.street+extension).replace(" ", "")
                 image.save("./website/static/imgs/"+image.filename)
@@ -171,7 +174,33 @@ def make_changes(id):
                 resized = Image.open("./website/static/imgs/"+image.filename)
                 resized = resized.resize((400, 400))
                 resized.save("./website/static/imgs/"+secure_filename(image.filename))
-            
+                address.image = (request.form["streetnum"] + request.form["street"] + extension).replace(" ", "")
+                print(address.image)
+            #Checks if meterNum field is empty
+            if(request.form["meterNum"] != ""):
+                address.meterNum = request.form["meterNum"]
+            else:
+                address.meterNum = None
+            #Checks if meterSize field is empty
+            if(request.form["meterSize"] != ""):
+                address.meterSize = request.form["meterSize"]
+            else:
+                address.meterSize = None
+            #Checks if tieOne field is empty
+            if(request.form["tieOne"] != ""):
+                address.tieOne = request.form["tieOne"]
+            else:
+                address.tieOne = None
+            #Checks if tieTwo field is empty
+            if(request.form["tieTwo"] != ""):
+                address.tieTwo = request.form["tieTwo"]
+            else:
+                address.tieTwo = None
+            #Checks if notes field is empty
+            if(request.form["notes"] != ""):
+                address.notes = request.form["notes"]
+            else:
+                address.notes = None
             db.session.commit()
             return render_template("make_changes.html", s=street, a=address, admin=user.admin, message="Address Successfully Modified")
         else:

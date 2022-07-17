@@ -3,7 +3,7 @@
     border-radius: 5px;
     width: 200px;
     height: 150px;
-    background-color: gray;
+    background-color: #004AAD;
     color:white
 }
 .block h3{
@@ -21,7 +21,7 @@ select[name="streetType"]{
     width:50px;
 }
 input[type="submit"]{
-    background: #00ff00;
+    background: #00CC00;
     text-decoration: none;
     border: 0;
     box-shadow: none;

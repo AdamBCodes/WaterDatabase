@@ -58,8 +58,13 @@ class addresses(db.Model):
         self.image = image
 
 #Changes Table
-#class changes(db.Model):
-    #id = db.Column("id", db.Integer, primary_key=True, nullable=False)
-    #userID = db.Column("userid", db.VARCHAR(255), nullable=False)
-    #date = db.Column("date", db.DateTime, nullable=False)
-    #change = db.Column("change", db.VARCHAR(255), nullable=False)
+class changes(db.Model):
+    id = db.Column("id", db.Integer, primary_key=True, nullable=False)
+    userID = db.Column("userid", db.VARCHAR(255), nullable=False)
+    date = db.Column("date", db.DateTime, nullable=False)
+    change = db.Column("change", db.VARCHAR(255), nullable=False)
+
+    def __init__(self, userID, date, change):
+        self.userID = userID
+        self.date = date
+        self.change = change

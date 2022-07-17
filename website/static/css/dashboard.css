@@ -1,0 +1,10 @@
+h1{
+    font-weight: 800;
+    font-size: 60px;
+    color: #004AAD;
+}
+h1 #user{
+    display:inline-block;
+    color:black;
+    text-transform: capitalize;
+}

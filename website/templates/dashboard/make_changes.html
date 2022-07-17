@@ -26,6 +26,28 @@
                 {% endif %}
             {% endfor %}
         </select>
+        {% if a.meterNum != None %}
+            <input type="text" name="meterNum" placeholder="Meter Number" value="{{ a.meterNum }}"/>
+        {% else %}
+            <input type="text" name="meterNum" placeholder="Meter Number" />
+        {% endif %}
+        {% if a.meterSize != None %}
+            <input type="text" name="meterSize" placeholder="Meter Size" value="{{ a.meterSize }}" />
+        {% else %}
+            <input type="text" name="meterSize" placeholder="Meter Size" />
+        {% endif %}
+        {% if a.tieOne != None %}
+            <input type="text" name="tieOne" placeholder="Tie 1" value="{{ a.tieOne }}"/>
+        {% else %}
+            <input type="text" name="tieOne" placeholder="Tie 1"/>
+        {% endif %}
+        {% if a.tieTwo != None %}
+            <input type="text" name="tieTwo" placeholder="Tie 2" value="{{ a.tieTwo }}"/>
+        {% else %}
+            <input type="text" name="tieTwo" placeholder="Tie 2" />
+        {% endif %}
+        <textarea name="notes">{% if a.notes != None %}{{ a.notes }}{% endif %}</textarea>
+        
         <input type="submit" value="Change"/>
     </form>
     <p>{{ message }}</p>
