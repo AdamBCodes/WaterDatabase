@@ -27,11 +27,16 @@
 .address{
     text-align: left;
     display: block;
-    background-color: gray;
+    padding: 10px;
+    border-radius: 5px;;
+    background-color: #004AAD;
     color: white;
     width: 400px;
     height: 100px;
     margin-top: 15px;
+}
+.address a{
+    color: white;
 }
 .address h3{
     display: inline-block;

@@ -81,9 +81,17 @@ def add_address(city):
             allStreets = streets.query.filter_by(city=city).all()
             #On POST
             if request.method == "POST":
+                #All Values that are pulled from the forms
                 streetnum = request.form["streetnum"]
                 street = request.form["street"]
+                meterNum = request.form["meterNum"]
+                meterSize = request.form["meterSize"]
+                tieOne = request.form["tieOne"]
+                tieTwo = request.form["tieTwo"]
+                notes = request.form["notes"]
+
                 image = request.files["img"]
+                
                 addressExists = addresses.query.filter_by(city=city, street=street,streetnum=streetnum).first()
                 #Checks if Address already exists
                 if addressExists:
@@ -94,15 +102,17 @@ def add_address(city):
                     extension = os.path.splitext(image.filename)[1]
                     image.filename = (streetnum+street+extension).replace(" ", "")
                     image.save("./website/static/imgs/"+secure_filename(image.filename))
-                    address = addresses(streetnum, street, city, image.filename)
+                    address = addresses(streetnum, street, city, meterNum, meterSize, tieOne, tieTwo, notes, image.filename)
 
                     #Resizes Image
                     resized = Image.open("./website/static/imgs/"+image.filename)
                     resized = resized.resize((400, 400))
                     resized.save("./website/static/imgs/"+secure_filename(image.filename))
                 else:
-                    address = addresses(streetnum, street, city, "placeholder.png")
-                print(address.image)
+                    #Creates Template for address to be committed
+                    address = addresses(streetnum, street, city, meterNum, meterSize, tieOne, tieTwo, notes, "placeholder.png")
+
+                #Commits to Database
                 db.session.add(address)
                 db.session.commit()
                 message="Successfully Created Address"

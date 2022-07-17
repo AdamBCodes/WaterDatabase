@@ -38,11 +38,23 @@ class addresses(db.Model):
     street = db.Column("street", db.VARCHAR(255), nullable=False)
     city = db.Column("city", db.VARCHAR(255), nullable=False)
     image = db.Column("image", db.VARCHAR(255), nullable=False)
+    meterNum = db.Column("meternum", db.VARCHAR(255), nullable=True)
+    meterSize = db.Column("metersize", db.VARCHAR(255), nullable=True)
+    tieOne = db.Column("tieone", db.VARCHAR(255), nullable=True)
+    tieTwo = db.Column("tietwo", db.VARCHAR(255), nullable=True)
+    notes = db.Column("notes", db.VARCHAR(400), nullable=True)
 
-    def __init__(self, streetnum, street, city, image):
+
+
+    def __init__(self, streetnum, street, city, meterNum, meterSize, tieOne, tieTwo, notes, image):
         self.streetnum = streetnum
         self.street = street
         self.city = city
+        self.meterNum = meterNum
+        self.meterSize = meterSize
+        self.tieOne = tieOne
+        self.tieTwo = tieTwo
+        self.notes = notes
         self.image = image
 
 #Changes Table
@@ -50,3 +62,4 @@ class addresses(db.Model):
     #id = db.Column("id", db.Integer, primary_key=True, nullable=False)
     #userID = db.Column("userid", db.VARCHAR(255), nullable=False)
     #date = db.Column("date", db.DateTime, nullable=False)
+    #change = db.Column("change", db.VARCHAR(255), nullable=False)

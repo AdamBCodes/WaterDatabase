@@ -5,9 +5,11 @@
     <h1>{{a.streetnum}} {{ a.street }}</h1>
     <img src="{{url_for('static', filename='imgs/'+a.image)}}" id="output" style="width: 20%; height: 20%;"/>
     <h2>Information</h2>
-    <h3>Tie 1</h3>
-    <h3>Tie 2</h3>
-    <p>Notes</p>
+    <h3>Meter Number: {{ a.meterNum }}</h3>
+    <h3>Meter Size: {{ a.meterSize }}</h3>
+    <h3>Tie 1: {{ a.tieOne }}</h3>
+    <h3>Tie 2: {{ a.tieTwo }}</h3>
+    <p>Notes: {{ a.notes }}</p>
     <a href="{{url_for('views.make_changes', id=a.id)}}">Make Changes</a>
     {% if admin %}
         <a href="{{url_for('views.delete_address', id=a.id)}}">Delete Address</a>

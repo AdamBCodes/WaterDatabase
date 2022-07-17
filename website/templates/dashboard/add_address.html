@@ -21,6 +21,11 @@
                 <option>{{ s.name }}</option>
             {% endfor %}
         </select>
+        <input type="text" name="meterNum" placeholder="Meter Number" />
+        <input type="text" name="meterSize" placeholder="Meter Size" />
+        <input type="text" name="tieOne" placeholder="Tie 1"/>
+        <input type="text" name="tieTwo" placeholder="Tie2"/>
+        <textarea name="notes" placeholder="Notes..."></textarea>
         <input type="file" name="img" onchange="loadFile(event)" accept="image/*"/>
         <input type="submit" value="Create Address" />
     </form>
