@@ -14,7 +14,7 @@
             </div>
             <a href="{{ url_for('views.home') }}">Dashboard</a>
             <a href="{{ url_for('views.addressViewer') }}">Addresses</a>
-            <a href="#">Changelog</a>
+            <a href="{{ url_for('views.changelog') }}">Changelog</a>
             <a href="{{ url_for('auth.logout') }}">Logout</a>
             {% if admin %}
                 <hr />

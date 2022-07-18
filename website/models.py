@@ -33,7 +33,7 @@ class streets(db.Model):
 
 #Address Table
 class addresses(db.Model):
-    id = db.Column("id", db.Integer, primary_key=True, nullable=False)
+    id = db.Column("id", db.Integer, primary_key=True, nullable=False, autoincrement=True)
     streetnum = db.Column("streetnum", db.VARCHAR(255), nullable=False)
     street = db.Column("street", db.VARCHAR(255), nullable=False)
     city = db.Column("city", db.VARCHAR(255), nullable=False)
@@ -43,8 +43,6 @@ class addresses(db.Model):
     tieOne = db.Column("tieone", db.VARCHAR(255), nullable=True)
     tieTwo = db.Column("tietwo", db.VARCHAR(255), nullable=True)
     notes = db.Column("notes", db.VARCHAR(400), nullable=True)
-
-
 
     def __init__(self, streetnum, street, city, meterNum, meterSize, tieOne, tieTwo, notes, image):
         self.streetnum = streetnum
@@ -59,7 +57,7 @@ class addresses(db.Model):
 
 #Changes Table
 class changes(db.Model):
-    id = db.Column("id", db.Integer, primary_key=True, nullable=False)
+    id = db.Column("id", db.Integer, primary_key=True, nullable=False, autoincrement=True)
     userID = db.Column("userid", db.VARCHAR(255), nullable=False)
     date = db.Column("date", db.DateTime, nullable=False)
     change = db.Column("change", db.VARCHAR(255), nullable=False)

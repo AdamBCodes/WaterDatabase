@@ -1,0 +1,11 @@
+.content{
+    padding: 0% 0% 0% 40%
+}
+.card{
+    background: #004AAD;
+    color: white;
+    display: block;
+    border-radius: 5px;
+    width: 30%;
+    min-width: 200px
+}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Changelog{% endblock %}
+{% block content %}
+    <div class="content">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/changelog.css') }}" />
+        {% if allChanges|length != 0 %}
+            {% for c in allChanges %}
+                <div class="card">
+                    <h3>{{ c.userID }}</h3>
+                    <h4>{{ c.change }}</h4>
+                    <h4>{{ c.date }}</h4>
+                </div>
+            {% endfor %}
+        {% else %}
+            <h1>No Changes</h1>
+        {% endif %}
+    </div>
+{% endblock %}

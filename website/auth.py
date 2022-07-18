@@ -20,7 +20,7 @@ def login():
     adminExists = users.query.filter_by(username="admin").count()
     if(adminExists <= 0):
         id = str(uuid4())
-        username = "admin"
+        username = "Admin"
         password = md5("1234".encode("utf-8")).hexdigest()
         admin = True
         usr = users(id, username, password, admin)

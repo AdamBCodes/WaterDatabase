@@ -28,7 +28,7 @@ def create_app():
     app.permanent_session_lifetime = timedelta(minutes=20)
 
     #Creates Database if it hasnt been already
-    from .models import users, cities, streets, addresses
+    from .models import users, cities, streets, addresses, changes
     create_database(app)
 
     return app

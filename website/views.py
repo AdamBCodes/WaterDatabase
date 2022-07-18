@@ -11,9 +11,9 @@ import os
 from PIL import Image
 from uuid import uuid4
 from hashlib import md5
-from .models import users, cities, streets, addresses
+from .models import users, cities, streets, addresses, changes
 from . import db
-import time
+import datetime
 
 views = Blueprint("views", __name__, static_folder="static", template_folder="templates/dashboard")
 
@@ -37,7 +37,11 @@ def add_city():
                 return redirect(url_for("views.admin_page"))
             else:
                 city = cities(cityName)
+                user = users.query.filter_by(id=session["userid"]).first()
+                change = f"Added City {cityName}"
+                modified = changes(user.username, datetime.datetime.now(), change)
                 db.session.add(city)
+                db.session.add(modified)
                 db.session.commit()
                 return redirect(url_for("views.admin_page"))
         except:
@@ -63,7 +67,11 @@ def add_street():
                 return redirect(url_for("views.admin_page"))
             else:
                 street = streets(revisedName, cityName)
+                change = f"Created Street: {revisedName}"
+                user = users.query.filter_by(id=session["userid"]).first()
+                modified = changes(user.username, datetime.datetime.now(), change)
                 db.session.add(street)
+                db.session.add(modified)
                 db.session.commit()
                 message="street was created"
                 return redirect(url_for("views.admin_page"))
@@ -113,6 +121,10 @@ def add_address(city):
                     address = addresses(streetnum, street, city, meterNum, meterSize, tieOne, tieTwo, notes, "placeholder.png")
 
                 #Commits to Database
+                user = users.query.filter_by(id=session["userid"]).first()
+                change = f"Added Address {address.streetnum} {address.street} in {city}"
+                modified = changes(user.username, datetime.datetime.now(), change)
+                db.session.add(modified)
                 db.session.add(address)
                 db.session.commit()
                 message="Successfully Created Address"
@@ -201,6 +213,9 @@ def make_changes(id):
                 address.notes = request.form["notes"]
             else:
                 address.notes = None
+            change = f"Modified {address.streetnum} {address.street}"
+            modified = changes(user.username, datetime.datetime.now(), change)
+            db.session.add(modified)
             db.session.commit()
             return render_template("make_changes.html", s=street, a=address, admin=user.admin, message="Address Successfully Modified")
         else:
@@ -218,7 +233,11 @@ def delete_address(id):
             dir = "./website/static/imgs/"
             if(((os.path.exists(dir+filename+".png")) or (os.path.exists(dir+filename+".jpeg")) or (os.path.exists(dir+filename+".jpg"))) and address.image != "placeholder.png"):
                 os.remove(dir+address.image)
+            address = addresses.query.filter_by(id=id).first()
+            deletion = f"Deleted Address: {address.streetnum} {address.street}"
+            change = changes(user.username, datetime.datetime.now(), deletion)
             db.session.delete(address)
+            db.session.add(change)
             db.session.commit()
             return redirect(url_for("views.addressViewer"))
         else:
@@ -251,6 +270,14 @@ def admin_page():
     else:
         return redirect(url_for("auth.login"))
 
+@views.route("/changelog")
+def changelog():
+    if 'userid' in session:
+        user = users.query.filter_by(id=session["userid"]).first()
+        allChanges = changes.query.all()
+        return render_template("changelogs.html", admin=user.admin, allChanges=allChanges)
+    else:
+        return redirect(url_for("auth.login"))
 
 #Creates Users(Reworked?)
 @views.route("/create_user", methods=["POST"])
@@ -265,7 +292,10 @@ def create_user():
             #Encrypts password with md5 hash
             password = md5(password.encode("utf-8")).hexdigest()
             usr = users(id, username, password, False)
+            change = f"Added User {username}"
+            modified = changes(user.username, datetime.datetime.now(), change)
             db.session.add(usr)
+            db.session.add(modified)
             db.session.commit()
             return redirect(url_for("views.admin_page"))
         else:
@@ -295,5 +325,11 @@ def show_users():
 def show_cities():
     for city in cities.query.all():
         print(city.name)
+    return "Check Logs"
+
+@views.route("/show_changes")
+def show_changes():
+    for change in changes.query.all():
+        print(change.change)
     return "Check Logs"
 ################################################################################################
