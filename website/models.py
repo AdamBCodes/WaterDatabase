@@ -31,6 +31,8 @@ class streets(db.Model):
         self.name = name
         self.city = city
 
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 #Address Table
 class addresses(db.Model):
     id = db.Column("id", db.Integer, primary_key=True, nullable=False, autoincrement=True)

@@ -2,6 +2,7 @@
 {% block title %}Add Address{% endblock %}
 {% block content %}
     <script>
+        
         var loadFile = function(event) {
             var reader = new FileReader();
             reader.onload = function(){
@@ -10,12 +11,34 @@
             };
             reader.readAsDataURL(event.target.files[0]);
         };
-        
+
+        var loadStreets = function(event, streets) {
+            parent = document.querySelector("#street")
+            keeper = parent.firstElementChild
+            console.log(keeper)
+            parent.innerHTML = ''
+            parent.appendChild(keeper)
+            value = document.getElementById("city").value
+            length = Object.keys(streets).length
+            for(var s=0; s<length; s++){
+                console.log(streets[s][1])
+                if(streets[s][1] === value){
+                    option = document.createElement('option')
+                    option.textContent+=streets[s][0]
+                    parent.appendChild(option)
+                }
+            }       
+        };
     </script>
     <form method="POST" enctype="multipart/form-data">
         <img id="output" style="width: 20%; height: 20%;"/>
-        <input type="text" name="streetnum" placeholder="Street Number" />
-        <select name="street" required>
+        <input type="text" name="streetnum" placeholder="Street Number" required />
+        <select id="city" name="city" onchange="loadStreets(event, {{ streetData }})">
+            {% for c in allCities %}
+                <option> {{ c.name }}</option>
+            {% endfor %}
+        </select>
+        <select id="street" name="street" required>
             <option disabled selected value> -- Select A Street -- </option>
             {% for s in allStreets %}
                 <option>{{ s.name }}</option>

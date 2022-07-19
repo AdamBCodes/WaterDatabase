@@ -14,6 +14,7 @@ from hashlib import md5
 from .models import users, cities, streets, addresses, changes
 from . import db
 import datetime
+import json
 
 views = Blueprint("views", __name__, static_folder="static", template_folder="templates/dashboard")
 
@@ -55,15 +56,13 @@ def add_city():
 def add_street():
     if "userid" in session:
         try:
-            #Gets all cities from the database
-            allCities = cities.query.all()
-
             cityName = request.form["cName"]
             revisedName = request.form["streetName"]+" "+request.form["streetType"]
             streetExists = streets.query.filter_by(city=cityName, name=revisedName).first()
             #Check if street already exists
             if streetExists:
                 message = "Street Already Exists"
+                print("Already Exists")
                 return redirect(url_for("views.admin_page"))
             else:
                 street = streets(revisedName, cityName)
@@ -82,15 +81,17 @@ def add_street():
 
 
 #Page to Add Addresses to database
-@views.route("/add_address/<city>", methods=["GET", "POST"])
-def add_address(city):
+@views.route("/add_address", methods=["GET", "POST"])
+def add_address():
     if "userid" in session:
-        try:
-            allStreets = streets.query.filter_by(city=city).all()
+        #try:
+            allStreets = streets.query.all()
+            user = users.query.filter_by(id=session["userid"]).first()
             #On POST
             if request.method == "POST":
                 #All Values that are pulled from the forms
                 streetnum = request.form["streetnum"]
+                city = request.form["city"]
                 street = request.form["street"]
                 meterNum = request.form["meterNum"]
                 meterSize = request.form["meterSize"]
@@ -121,7 +122,6 @@ def add_address(city):
                     address = addresses(streetnum, street, city, meterNum, meterSize, tieOne, tieTwo, notes, "placeholder.png")
 
                 #Commits to Database
-                user = users.query.filter_by(id=session["userid"]).first()
                 change = f"Added Address {address.streetnum} {address.street} in {city}"
                 modified = changes(user.username, datetime.datetime.now(), change)
                 db.session.add(modified)
@@ -132,10 +132,15 @@ def add_address(city):
             #On GET
             else:
                 if len(allStreets) > 0:
-                    return render_template("add_address.html", allStreets=allStreets)
+                    allCities = cities.query.all()
+                    streetData = {}
+                    for v, d in enumerate(allStreets):
+                        streetData[v] = [d.name, d.city]
+                    print(streetData)
+                    return render_template("add_address.html", allStreets=allStreets, allCities=allCities, streetData=streetData, admin=user.admin)
                 else:
                     return redirect(url_for("views.add_street"))
-        except:
+        #except:
             return redirect(url_for("views.error"))
     else:
         return redirect(url_for("auth.login"))
