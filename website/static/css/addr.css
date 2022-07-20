@@ -1,0 +1,28 @@
+.container{
+    display:block;
+    width: 30%;
+    padding: 1vw;
+    margin-left: 32%;
+}
+input{
+    padding: 0.8em;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+input[name="streetnum"]{
+    margin:0px 100px 5px 0px;
+}
+select{
+    padding: 1em;
+    font-size: 1em;
+    margin-bottom: 5px;
+    width: 12em
+}
+input[type="submit"]
+{
+    background-color: #00CC00;
+    box-shadow: none;
+    text-decoration: none;
+    border:0;
+    color:white;
+}

@@ -19,7 +19,7 @@ import json
 views = Blueprint("views", __name__, static_folder="static", template_folder="templates/dashboard")
 
 
-#Home Page
+#Dashboard Page
 @views.route("/")
 def home():
     if "userid" in session:
@@ -27,7 +27,7 @@ def home():
         return render_template("home.html", username=user.username, admin=user.admin)
     return redirect(url_for("auth.login"))
 
-#Page to Add Cities to database
+#POST request to Add Cities to database
 @views.route("/add_city", methods=["POST"])
 def add_city():
     if "userid" in session:
@@ -51,7 +51,7 @@ def add_city():
         return redirect(url_for("auth.login"))
 
 
-#Page to Add Streets to database
+#POST request to Add Streets to database
 @views.route("/add_street", methods=["POST"])
 def add_street():
     if "userid" in session:
@@ -136,7 +136,6 @@ def add_address():
                     streetData = {}
                     for v, d in enumerate(allStreets):
                         streetData[v] = [d.name, d.city]
-                    print(streetData)
                     return render_template("add_address.html", allStreets=allStreets, allCities=allCities, streetData=streetData, admin=user.admin)
                 else:
                     return redirect(url_for("views.add_street"))

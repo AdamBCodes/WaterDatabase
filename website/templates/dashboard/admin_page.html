@@ -2,6 +2,7 @@
 
 {% block title %}Admin Page{% endblock %}
 {% block content %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}">
     <div class="block">
         <h3>Create User</h3>
         <form method="POST" action="/create_user">

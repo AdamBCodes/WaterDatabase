@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}Make Changes{% endblock %}
+
 {% block content %}
     <script>
         var loadFile = function(event) {
@@ -12,43 +14,54 @@
         };
         
     </script>
-
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/modify.css') }}" />
     <img src="{{url_for('static', filename='imgs/'+a.image)}}" id="output" style="width: 20%; height: 20%;" />
-    <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="img" onchange="loadFile(event)" accept="image/*"/>
-        <input name="streetnum" value="{{ a.streetnum }}"/>
-        <select name="street">
-            {% for street in s %}
-                {% if street.name == a.street %}
-                    <option selected>{{ street.name }}</option>
-                {% else %}
-                    <option>{{ street.name }}</option>
-                {% endif %}
-            {% endfor %}
-        </select>
-        {% if a.meterNum != None %}
-            <input type="text" name="meterNum" placeholder="Meter Number" value="{{ a.meterNum }}"/>
-        {% else %}
-            <input type="text" name="meterNum" placeholder="Meter Number" />
-        {% endif %}
-        {% if a.meterSize != None %}
-            <input type="text" name="meterSize" placeholder="Meter Size" value="{{ a.meterSize }}" />
-        {% else %}
-            <input type="text" name="meterSize" placeholder="Meter Size" />
-        {% endif %}
-        {% if a.tieOne != None %}
-            <input type="text" name="tieOne" placeholder="Tie 1" value="{{ a.tieOne }}"/>
-        {% else %}
-            <input type="text" name="tieOne" placeholder="Tie 1"/>
-        {% endif %}
-        {% if a.tieTwo != None %}
-            <input type="text" name="tieTwo" placeholder="Tie 2" value="{{ a.tieTwo }}"/>
-        {% else %}
-            <input type="text" name="tieTwo" placeholder="Tie 2" />
-        {% endif %}
-        <textarea name="notes">{% if a.notes != None %}{{ a.notes }}{% endif %}</textarea>
-        
-        <input type="submit" value="Change"/>
-    </form>
+    <div class="container">
+        <form method="POST" enctype="multipart/form-data">
+            <label>Image</label><br/>
+            <input type="file" name="img" onchange="loadFile(event)" accept="image/*"/>
+            <br/>
+            <label>Street Info</label><br/>
+            <input name="streetnum" value="{{ a.streetnum }}"/>
+            <select name="street">
+                {% for street in s %}
+                    {% if street.name == a.street %}
+                        <option selected>{{ street.name }}</option>
+                    {% else %}
+                        <option>{{ street.name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <br/>
+            <label>Meter Number</label><br/>
+            {% if a.meterNum != None %}
+                <input type="text" name="meterNum" placeholder="Meter Number" value="{{ a.meterNum }}"/>
+            {% else %}
+                <input type="text" name="meterNum" placeholder="Meter Number" />
+            {% endif %}<br/>
+            <label>Meter Size</label><br/>
+            {% if a.meterSize != None %}
+                <input type="text" name="meterSize" placeholder="Meter Size" value="{{ a.meterSize }}" />
+            {% else %}
+                <input type="text" name="meterSize" placeholder="Meter Size" />
+            {% endif %}<br/>
+            <label>Tie One</label><br/>
+            {% if a.tieOne != None %}
+                <input type="text" name="tieOne" placeholder="Tie 1" value="{{ a.tieOne }}"/>
+            {% else %}
+                <input type="text" name="tieOne" placeholder="Tie 1"/>
+            {% endif %}<br/>
+            <label>Tie Two</label><br/>
+            {% if a.tieTwo != None %}
+                <input type="text" name="tieTwo" placeholder="Tie 2" value="{{ a.tieTwo }}"/>
+            {% else %}
+                <input type="text" name="tieTwo" placeholder="Tie 2" />
+            {% endif %}<br/>
+            <label>Notes</label><br/>
+            <textarea name="notes" placeholder="Notes" rows="6" cols="30">{% if a.notes != None %}{{ a.notes }}{% endif %}</textarea><br/>
+            
+            <input type="submit" value="Change"/>
+        </form>
+    </div>
     <p>{{ message }}</p>
 {% endblock %}

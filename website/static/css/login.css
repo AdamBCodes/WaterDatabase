@@ -1,0 +1,54 @@
+*{
+    font-family: 'Open Sans';
+    text-align: center;
+}
+body{
+    background-image: url("../staticImgs/loginback.png");
+}
+.container{
+    background-color: #004AAD;
+    text-align: center;
+    display: inline-block;
+    padding: 20px 15px 50px 15px;
+    margin-top: 10%;
+    border-radius: 4px;
+    width: 20em;
+    height: 30em;
+}
+input[type="text"]{
+    font-size: 1.5em;
+    width: 10em;
+    height: 2em;
+    margin-bottom: 15px;
+    text-align: left;
+}
+input[type="password"]{
+    font-size: 1.5em;
+    width: 10em;
+    height: 2em;
+    margin-bottom: 15px;
+    text-align: left;
+}
+i
+{
+    color:#FAF9F6;
+}
+h1{
+    color:#FAF9F6;
+    margin-bottom: 40px;
+}
+input[type="submit"]
+{
+    background-color: #00CC00;
+    box-shadow: none;
+    text-decoration: none;
+    border:0;
+    color:white;
+    padding: 5px 10px 5px 10px;
+    border-radius: 2px;
+    width: 10em;
+    font-size: 1.5em;
+}
+input[type="submit"]:hover{
+    cursor: pointer;
+}
