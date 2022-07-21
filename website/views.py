@@ -319,7 +319,7 @@ def changelog():
     else:
         return redirect(url_for("auth.login"))
 
-#Creates Users(Reworked?)
+#Creates Users
 @views.route("/create_user", methods=["POST"])
 def create_user():
     if "userid" in session:
@@ -352,24 +352,24 @@ def error():
 
 #Testing########################################################################################
 #Shows Users(Test)
-@views.route("/show_users")
-def show_users():
-    for user in users.query.all():
-        print(user.id)
-        print(user.username)
-        print(user.password)
-    return "Check Logs"
+#@views.route("/show_users")
+#def show_users():
+    #for user in users.query.all():
+        #print(user.id)
+        #print(user.username)
+        #print(user.password)
+    #return "Check Logs"
 
 #Shows Cities(Test)
-@views.route("/show_cities")
-def show_cities():
-    for city in cities.query.all():
-        print(city.name)
-    return "Check Logs"
+# @views.route("/show_cities")
+# def show_cities():
+#     for city in cities.query.all():
+#         print(city.name)
+#     return "Check Logs"
 
-@views.route("/show_changes")
-def show_changes():
-    for change in changes.query.all():
-        print(change.change)
-    return "Check Logs"
+# @views.route("/show_changes")
+# def show_changes():
+#     for change in changes.query.all():
+#         print(change.change)
+#     return "Check Logs"
 ################################################################################################
