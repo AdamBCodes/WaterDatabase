@@ -1,6 +1,25 @@
 {% extends "base.html" %}
 {% block title %}Addresses{% endblock %}
 {% block content %}
+    <script>
+        var loadStreets = function(event, streets) {
+            parent = document.querySelector("#street")
+            keeper = parent.firstElementChild
+            console.log(keeper)
+            parent.innerHTML = ''
+            parent.appendChild(keeper)
+            value = document.getElementById("city").value
+            length = Object.keys(streets).length
+            for(var s=0; s<length; s++){
+                console.log(streets[s][1])
+                if(streets[s][1] === value){
+                    option = document.createElement('option')
+                    option.textContent+=streets[s][0]
+                    parent.appendChild(option)
+                }
+            }       
+        };
+    </script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
     <div class="main">
         <div class="box">
@@ -8,6 +27,18 @@
             <!--<input type="text" class="input-field" placeholder="Search" />-->
         </div>
     </div>
+    <form method="POST">
+        <select id="city" name="city" onchange="loadStreets(event, {{ streetData }})">
+            <option disabled selected value> -- Select A City -- </option>
+            {% for c in allCities %}
+                <option>{{ c.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="street" id="street">
+            <option disabled selected value> -- Select A Street -- </option>
+        </select>
+        <input type="submit" value="Search"/>
+    </form>
     <button onclick="location.href='/add_address';">Add New</button>
     <div class="addresses">
         {% if allAddresses|length != 0 %}

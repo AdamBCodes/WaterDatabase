@@ -144,15 +144,26 @@ def add_address():
     else:
         return redirect(url_for("auth.login"))
 
-@views.route("/addresses")
+@views.route("/addresses", methods=["GET", "POST"])
 def addressViewer():
     if "userid" in session:
-        try:
+        #try:
+            allCities = cities.query.all()
+            allStreets = streets.query.all()
+            streetData = {}
             user = users.query.filter_by(id=session["userid"]).first()
-            address = addresses.query.all()
-            return render_template("addresses.html", admin=user.admin, allAddresses=address)
-        except:
-            return redirect(url_for("views.error"))
+            for v, d in enumerate(allStreets):
+                streetData[v] = [d.name, d.city]
+            if request.method == "GET":
+                address = addresses.query.all()
+                return render_template("addresses.html", admin=user.admin, allAddresses=address, streetData=streetData, allCities=allCities)
+            else:
+                city=request.form["city"]
+                street=request.form["street"]
+                address = addresses.query.filter_by(city=city, street=street).all()
+                return render_template("addresses.html", admin=user.admin, allAddresses=address, streetData=streetData, allCities=allCities)
+        #except:
+            #return redirect(url_for("views.error"))
     else:
         return redirect(url_for("auth.login"))
 
