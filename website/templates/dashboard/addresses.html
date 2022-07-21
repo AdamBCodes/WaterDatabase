@@ -28,7 +28,7 @@
         </div>
     </div>
     <form method="POST">
-        <select id="city" name="city" onchange="loadStreets(event, {{ streetData }})">
+        <select id="city" name="city" onchange="loadStreets(event, {{ streetData }})" required>
             <option disabled selected value> -- Select A City -- </option>
             {% for c in allCities %}
                 <option>{{ c.name }}</option>

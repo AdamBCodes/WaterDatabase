@@ -50,7 +50,22 @@
                     <option>Sqr</option>
                 </select>
                 <input type="submit" value="Create Street" />
-            </form>
             {% endif %}
+        </form>
+    </div>
+    <div class="block">
+        <h3>Make Admin</h3>
+        <form method="POST" action="/make_admin">
+            <select name="username" required>
+                <option disabled selected value> -- Select A User -- </option>
+                {% for u in allUsers %}
+                    {% if u.admin == False %}
+                        <option>{{ u.username }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <br />
+            <input type="submit" value="Make Admin" />
+        </form>
     </div>
 {% endblock %}

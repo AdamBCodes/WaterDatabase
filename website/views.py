@@ -147,7 +147,7 @@ def add_address():
 @views.route("/addresses", methods=["GET", "POST"])
 def addressViewer():
     if "userid" in session:
-        #try:
+        try:
             allCities = cities.query.all()
             allStreets = streets.query.all()
             streetData = {}
@@ -159,11 +159,15 @@ def addressViewer():
                 return render_template("addresses.html", admin=user.admin, allAddresses=address, streetData=streetData, allCities=allCities)
             else:
                 city=request.form["city"]
-                street=request.form["street"]
-                address = addresses.query.filter_by(city=city, street=street).all()
+                street=request.form.get("street")
+                print(street)
+                if(city != None and street != None):
+                    address = addresses.query.filter_by(city=city, street=street).all()
+                else:
+                    address = addresses.query.filter_by(city=city).all()
                 return render_template("addresses.html", admin=user.admin, allAddresses=address, streetData=streetData, allCities=allCities)
-        #except:
-            #return redirect(url_for("views.error"))
+        except:
+            return redirect(url_for("views.error"))
     else:
         return redirect(url_for("auth.login"))
 
@@ -269,15 +273,36 @@ def address(id):
     else:
         return redirect(url_for("auth.login"))
 
+
+@views.route("/make_admin", methods=["POST"])
+def make_admin():
+    if 'userid' in session:
+        try:
+            user = users.query.filter_by(id=session["userid"]).first()
+            if(user.admin):
+                name = request.form["username"]
+                newAdmin = users.query.filter_by(username=name).first()
+                newAdmin.admin = True
+                print(newAdmin.admin)
+                db.session.commit()
+                return redirect(url_for("views.admin_page"))
+            else:
+                return redirect(url_for("views.home"))
+        except:
+            return redirect(url_for("views.error"))
+    else:
+        return redirect(url_for("auth.login"))
+
 @views.route("/admin")
 def admin_page():
     if 'userid' in session:
         try:
             user = users.query.filter_by(id=session["userid"]).first()
+            allUsers = users.query.all()
             allCities = cities.query.all()
             allStreets = streets.query.all()
             if(user.admin):
-                return render_template("admin_page.html", admin=user.admin, allCities=allCities, allStreets=allStreets)
+                return render_template("admin_page.html", admin=user.admin, allCities=allCities, allStreets=allStreets, allUsers=allUsers)
             else:
                 return redirect(url_for("views.home"))
         except:
