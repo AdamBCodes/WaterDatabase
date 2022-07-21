@@ -20,6 +20,9 @@ input[type="submit"]
     border:0;
     color:white;
 }
+input[type="submit"]:hover{
+    cursor: pointer;
+}
 select{
     padding: 1em;
     font-size: 1em;

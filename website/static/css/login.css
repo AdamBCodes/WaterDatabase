@@ -14,6 +14,7 @@ body{
     border-radius: 4px;
     width: 20em;
     height: 30em;
+    box-shadow: 4px 2px 29px 0px rgba(0,0,0,0.47);
 }
 input[type="text"]{
     font-size: 1.5em;
