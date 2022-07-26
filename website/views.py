@@ -83,7 +83,7 @@ def add_street():
 @views.route("/add_address", methods=["GET", "POST"])
 def add_address():
     if "userid" in session:
-        #try:
+        try:
             allStreets = streets.query.all()
             user = users.query.filter_by(id=session["userid"]).first()
             #On POST
@@ -137,8 +137,8 @@ def add_address():
                         streetData[v] = [d.name, d.city]
                     return render_template("add_address.html", allStreets=allStreets, allCities=allCities, streetData=streetData, admin=user.admin)
                 else:
-                    return redirect(url_for("views.add_street"))
-        #except:
+                    return redirect(url_for("views.addresses"))
+        except:
             return redirect(url_for("views.error"))
     else:
         return redirect(url_for("auth.login"))
@@ -192,7 +192,8 @@ def make_changes(id):
 
                     if((os.path.exists(dir+oldname+".png")) or (os.path.exists(dir+oldname+".jpeg")) or (os.path.exists(dir+oldname+".jpg"))):
                         os.rename("./website/static/imgs/"+address.image, "./website/static/imgs/"+rename+extension)
-                    address.image = rename+extension
+                    if address.image != "placeholder.png":
+                        address.image = rename+extension
                 else:
                     return render_template("make_changes.html", s=street, a=address, admin=user.admin, message="Address Already Exists")
             image = request.files["img"]
@@ -205,7 +206,8 @@ def make_changes(id):
                 resized = resized.resize((400, 400))
                 resized.save("./website/static/imgs/"+secure_filename(image.filename))
                 address.image = (request.form["streetnum"] + request.form["street"] + extension).replace(" ", "")
-                print(address.image)
+
+                
             #Checks if meterNum field is empty
             if(request.form["meterNum"] != ""):
                 address.meterNum = request.form["meterNum"]
