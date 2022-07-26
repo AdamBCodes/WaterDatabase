@@ -1,3 +1,4 @@
+
 .block{
     display:block;
     border-radius: 5px;
@@ -27,4 +28,13 @@ input[type="submit"]{
     box-shadow: none;
     border-radius: 5px;
     color: white;
+}
+input[type="submit"]:hover{
+    cursor:pointer;
+}
+.section{
+    display:block;
+    width: 200px;
+    margin-right: 50px;;
+    float:left;
 }

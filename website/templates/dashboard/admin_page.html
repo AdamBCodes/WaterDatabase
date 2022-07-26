@@ -2,70 +2,120 @@
 
 {% block title %}Admin Page{% endblock %}
 {% block content %}
+    <script>
+        var loadStreets = function(event, streets) {
+            parent = document.querySelector("#streetDelete")
+            keeper = parent.firstElementChild
+            console.log(keeper)
+            parent.innerHTML = ''
+            parent.appendChild(keeper)
+            value = document.getElementById("city").value
+            length = Object.keys(streets).length
+            for(var s=0; s<length; s++){
+                console.log(streets[s][1])
+                if(streets[s][1] === value){
+                    option = document.createElement('option')
+                    option.textContent+=streets[s][0]
+                    parent.appendChild(option)
+                }
+            }       
+        };
+    </script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}">
-    <div class="block">
-        <h3>Create User</h3>
-        <form method="POST" action="/create_user">
-            <input type="text" name="username" placeholder="Username" />
-            <input type="password" name="password" placeholder="Password"/>
-            <br />
-            <input type="submit" value="Create User" />
-        </form>
+    <div class="section">
+        <div class="block">
+            <h3>Create User</h3>
+            <form method="POST" action="/create_user">
+                <input type="text" name="username" placeholder="Username" />
+                <input type="password" name="password" placeholder="Password"/>
+                <br />
+                <input type="submit" value="Create User" />
+            </form>
+        </div>
+        <div class="block">
+            <h3>Create City</h3>
+            <form method="POST" action="/add_city">
+                <input type="text" name="cityName" placeholder="City Name" required />
+                <br />
+                <input type="submit" value="Create City" />
+                {{ message }}
+            </form>
+        </div>
+        <div class="block">
+            <h3>Create Street</h3>
+            <form method="POST" action="/add_street">
+                {% if allCities|length == 0 %}
+                    <h4>No Cities Found</h4>
+                {% else %}
+                    <select name="cName" required>
+                        <option disabled selected value> -- Select A City -- </option>
+                        {% for c in allCities %}
+                            <option>{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <br />
+                    <input type="text" name="streetName" placeholder="Street Name" required/>
+                    <select name="streetType" required>
+                        <option disabled selected value> -- Select A Type -- </option>
+                        <option>Ave</option>
+                        <option>Bldg</option>
+                        <option>Bvld</option>
+                        <option>Cres</option>
+                        <option>Crt</option>
+                        <option>Dr</option>
+                        <option>Pl</option>
+                        <option>Rd</option>
+                        <option>St</option>
+                        <option>Stn</option>
+                        <option>Sqr</option>
+                    </select>
+                    <input type="submit" value="Create Street" />
+                {% endif %}
+            </form>
+        </div>
+        <div class="block">
+            <h3>Make Admin</h3>
+            <form method="POST" action="/make_admin">
+                <select name="username" required>
+                    <option disabled selected value> -- Select A User -- </option>
+                    {% for u in allUsers %}
+                        {% if u.admin == False %}
+                            <option>{{ u.username }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <br />
+                <input type="submit" value="Make Admin" />
+            </form>
+        </div>
     </div>
-    <div class="block">
-        <h3>Create City</h3>
-        <form method="POST" action="/add_city">
-            <input type="text" name="cityName" placeholder="City Name" required />
-            <br />
-            <input type="submit" value="Create City" />
-            {{ message }}
-        </form>
-    </div>
-    <div class="block">
-        <h3>Create Street</h3>
-        <form method="POST" action="/add_street">
-            {% if allCities|length == 0 %}
-                <h4>No Cities Found</h4>
-            {% else %}
-                <select name="cName" required>
+    <div class="section">
+        <div class="block">
+            <h3>Delete City</h3>
+            <form method="POST" action="/delete_city">
+                <select name="cityDelete" required>
                     <option disabled selected value> -- Select A City -- </option>
                     {% for c in allCities %}
                         <option>{{ c.name }}</option>
                     {% endfor %}
-                </select>
-                <br />
-                <input type="text" name="streetName" placeholder="Street Name" required/>
-                <select name="streetType" required>
-                    <option disabled selected value> -- Select A Type -- </option>
-                    <option>Ave</option>
-                    <option>Bldg</option>
-                    <option>Bvld</option>
-                    <option>Cres</option>
-                    <option>Crt</option>
-                    <option>Dr</option>
-                    <option>Pl</option>
-                    <option>Rd</option>
-                    <option>St</option>
-                    <option>Stn</option>
-                    <option>Sqr</option>
-                </select>
-                <input type="submit" value="Create Street" />
-            {% endif %}
-        </form>
-    </div>
-    <div class="block">
-        <h3>Make Admin</h3>
-        <form method="POST" action="/make_admin">
-            <select name="username" required>
-                <option disabled selected value> -- Select A User -- </option>
-                {% for u in allUsers %}
-                    {% if u.admin == False %}
-                        <option>{{ u.username }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-            <br />
-            <input type="submit" value="Make Admin" />
-        </form>
+                </select><br />
+                <input type="submit" value="Delete City"/>
+            </form>
+        </div>
+        <div class="block">
+            <h3>Delete Street</h3>
+            <form method="POST" action="/delete_street">
+                <select onchange="loadStreets(event, {{ streetData }})" id="city">
+                    <option disabled selected value> -- Select A City -- </option>
+                    {% for c in allCities %}
+                        <option>{{ c.name }}</option>
+                    {% endfor %}
+                </select><br />
+                <select id="streetDelete" name="streetDelete" required>
+                    <option disabled selected value> -- Select A Street -- </option>
+                </select><br />
+                <input type="submit" value="Delete Street"/>
+            </form>
+        </div>
     </div>
 {% endblock %}

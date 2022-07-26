@@ -18,7 +18,6 @@ auth = Blueprint("auth", __name__, static_folder="static", template_folder="temp
 @auth.route("/login", methods=["GET", "POST"])
 def login():
     adminExists = users.query.filter_by(username="Admin").count()
-    print(adminExists)
     if(adminExists <= 0):
         id = str(uuid4())
         username = "Admin"

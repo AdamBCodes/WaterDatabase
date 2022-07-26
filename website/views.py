@@ -14,7 +14,6 @@ from hashlib import md5
 from .models import users, cities, streets, addresses, changes
 from . import db
 import datetime
-import json
 
 views = Blueprint("views", __name__, static_folder="static", template_folder="templates/dashboard")
 
@@ -264,6 +263,56 @@ def delete_address(id):
     else:
          return redirect(url_for("auth.login"))
 
+@views.route("/delete_city", methods=["POST"])
+def delete_city():
+    if "userid" in session:
+        if request.method == "POST":
+            cityName = request.form["cityDelete"]
+            user = users.query.filter_by(id=session["userid"]).first()
+            if user.admin:
+                city = cities.query.filter_by(name=cityName).first()
+                cityStreets = streets.query.filter_by(city=cityName).all()
+                for c in cityStreets:
+                    db.session.delete(c)
+                cityAddresses = addresses.query.filter_by(city=cityName)
+                for a in cityAddresses:
+                    db.session.delete(a)
+                change = changes(user.username, datetime.datetime.now(), "Deleted City, Streets, and Addresses in " + cityName)
+                db.session.delete(city)
+                db.session.add(change)
+                db.session.commit()
+                return redirect(url_for("views.admin_page"))
+            else:
+                return redirect(url_for("views.home"))
+        else:
+            return redirect(url_for("views.home"))
+    else:
+        return redirect(url_for("auth.login"))
+
+@views.route("/delete_street", methods=["POST"])
+def delete_street():
+    if "userid" in session:
+        if request.method == "POST":
+            streetName = request.form["streetDelete"]
+            user = users.query.filter_by(id=session["userid"]).first()
+            if user.admin:
+                street = streets.query.filter_by(name=streetName).first()
+                print(street.name)
+                cityAddresses = addresses.query.filter_by(street=streetName, city=street.city)
+                for a in cityAddresses:
+                    db.session.delete(a)
+                change = changes(user.username, datetime.datetime.now(), "Deleted Addresses and Street " + streetName + " in " + street.city)
+                db.session.delete(street)
+                db.session.add(change)
+                db.session.commit()
+                return redirect(url_for("views.admin_page"))
+            else:
+                return redirect(url_for("views.home"))
+        else:
+            return redirect(url_for("views.home"))
+    else:
+        return redirect(url_for("auth.login"))
+
 @views.route("/address/<id>")
 def address(id):
     if "userid" in session:
@@ -272,8 +321,7 @@ def address(id):
         return render_template("address.html", a = address, admin=user.admin)
     else:
         return redirect(url_for("auth.login"))
-
-
+        
 @views.route("/make_admin", methods=["POST"])
 def make_admin():
     if 'userid' in session:
@@ -301,8 +349,11 @@ def admin_page():
             allUsers = users.query.all()
             allCities = cities.query.all()
             allStreets = streets.query.all()
+            streetData = {}
+            for v, d in enumerate(allStreets):
+                streetData[v] = [d.name, d.city]
             if(user.admin):
-                return render_template("admin_page.html", admin=user.admin, allCities=allCities, allStreets=allStreets, allUsers=allUsers)
+                return render_template("admin_page.html", admin=user.admin, allCities=allCities, allStreets=allStreets, allUsers=allUsers, streetData=streetData)
             else:
                 return redirect(url_for("views.home"))
         except:
@@ -314,7 +365,7 @@ def admin_page():
 def changelog():
     if 'userid' in session:
         user = users.query.filter_by(id=session["userid"]).first()
-        allChanges = changes.query.all()
+        allChanges = changes.query.order_by(changes.date.desc()).all()
         return render_template("changelogs.html", admin=user.admin, allChanges=allChanges)
     else:
         return redirect(url_for("auth.login"))
