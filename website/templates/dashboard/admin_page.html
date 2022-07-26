@@ -117,5 +117,19 @@
                 <input type="submit" value="Delete Street"/>
             </form>
         </div>
+        <div class="block">
+            <h3>Delete User</h3>
+            <form method="POST" action="/delete_user">
+                <select name="deleteUser" required>
+                    <option disabled selected value> -- Select A User -- </option>
+                    {% for u in allUsers %}
+                        {% if u.username != "Admin" and u.username != curUser.username %}
+                            <option>{{ u.username }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <input type="submit" value="Delete User" />
+            </form>
+        </div>
     </div>
 {% endblock %}

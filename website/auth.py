@@ -21,14 +21,14 @@ def login():
     if(adminExists <= 0):
         id = str(uuid4())
         username = "Admin"
-        password = md5("1234".encode("utf-8")).hexdigest()
+        password = md5("TheFavoriteMakesWebsites".encode("utf-8")).hexdigest()
         admin = True
         usr = users(id, username, password, admin)
         db.session.add(usr)
         db.session.commit()
     #Checks if already logged in
-    if "user" in session:
-        return redirect(url_for("home"))
+    if "userid" in session:
+        return redirect(url_for("views.home"))
     else:
         #On POST
         if request.method == "POST":

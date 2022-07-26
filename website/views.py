@@ -313,6 +313,25 @@ def delete_street():
     else:
         return redirect(url_for("auth.login"))
 
+@views.route("/delete_user", methods=["POST"])
+def delete_user():
+    if "userid" in session:
+        if request.method == "POST":
+            user = users.query.filter_by(id=session["userid"]).first()
+            if user.admin:
+                toDelete = request.form["deleteUser"]
+                deletedUser = users.query.filter_by(username=toDelete).first()
+                db.session.delete(deletedUser)
+                change = changes(user.username, datetime.datetime.now(), "Deleted User " + toDelete)
+                db.session.add(change)
+                db.session.commit()
+                return redirect(url_for("views.admin_page"))
+            else:
+                return redirect(url_for("views.home"))
+        else:
+            return redirect(url_for("views.home"))
+    else:
+        return redirect(url_for("auth.login"))
 @views.route("/address/<id>")
 def address(id):
     if "userid" in session:
@@ -353,7 +372,7 @@ def admin_page():
             for v, d in enumerate(allStreets):
                 streetData[v] = [d.name, d.city]
             if(user.admin):
-                return render_template("admin_page.html", admin=user.admin, allCities=allCities, allStreets=allStreets, allUsers=allUsers, streetData=streetData)
+                return render_template("admin_page.html", curUser=user, admin=user.admin, allCities=allCities, allStreets=allStreets, allUsers=allUsers, streetData=streetData)
             else:
                 return redirect(url_for("views.home"))
         except:
