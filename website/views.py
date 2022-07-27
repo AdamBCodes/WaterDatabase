@@ -87,9 +87,10 @@ def add_street():
 @views.route("/add_address", methods=["GET", "POST"])
 def add_address():
     if "userid" in session:
-        try:
+        #try:
             allStreets = streets.query.all()
             user = users.query.filter_by(id=session["userid"]).first()
+            print(user.role)
             if user.role >= 1:
                 #On POST
                 if request.method == "POST":
@@ -109,7 +110,7 @@ def add_address():
                     #Checks if Address already exists
                     if addressExists:
                         message="Address Already Exists"
-                        return render_template("add_address.html", allStreets=allStreets, message=message)
+                        return render_template("add_address.html", allStreets=allStreets, message=message, user=user)
                     #Gets File Extension for image
                     if(image.filename != ""):
                         extension = os.path.splitext(image.filename)[1]
@@ -132,7 +133,7 @@ def add_address():
                     db.session.add(address)
                     db.session.commit()
                     message="Successfully Created Address"
-                    return render_template("add_address.html", allStreets=allStreets, message=message)
+                    return render_template("add_address.html", allStreets=allStreets, message=message, user=user)
                 #On GET
                 else:
                     if len(allStreets) > 0:
@@ -145,8 +146,8 @@ def add_address():
                         return redirect(url_for("views.addresses"))
             else:
                 return redirect(url_for("views.home"))
-        except:
-            return redirect(url_for("views.error"))
+        #except:
+            #return redirect(url_for("views.error"))
     else:
         return redirect(url_for("auth.login"))
 
