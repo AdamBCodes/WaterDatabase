@@ -4,7 +4,9 @@
 {% block content %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <h1>Hello <div id="user">{{ username }}</div></h1>
-    {% if admin %}
+    {% if user.role == 2 %}
         <p>You are an Admin</p>
+    {% elif user.role == 0 %}
+        <p>You are View Only</p>
     {% endif %}
 {% endblock %}

@@ -23,7 +23,7 @@ views = Blueprint("views", __name__, static_folder="static", template_folder="te
 def home():
     if "userid" in session:
         user = users.query.filter_by(id=session["userid"]).first()
-        return render_template("home.html", username=user.username, admin=user.admin)
+        return render_template("home.html", username=user.username, user=user)
     return redirect(url_for("auth.login"))
 
 #POST request to Add Cities to database
@@ -55,24 +55,28 @@ def add_city():
 def add_street():
     if "userid" in session:
         try:
-            cityName = request.form["cName"]
-            revisedName = request.form["streetName"]+" "+request.form["streetType"]
-            streetExists = streets.query.filter_by(city=cityName, name=revisedName).first()
-            #Check if street already exists
-            if streetExists:
-                message = "Street Already Exists"
-                print("Already Exists")
-                return redirect(url_for("views.admin_page"))
+            user = users.query.filter_by(id=session["userid"]).first()
+            if user.role >= 2:
+                cityName = request.form["cName"]
+                revisedName = request.form["streetName"]+" "+request.form["streetType"]
+                streetExists = streets.query.filter_by(city=cityName, name=revisedName).first()
+                #Check if street already exists
+                if streetExists:
+                    message = "Street Already Exists"
+                    print("Already Exists")
+                    return redirect(url_for("views.admin_page"))
+                else:
+                    street = streets(revisedName, cityName)
+                    change = f"Created Street: {revisedName}"
+                    user = users.query.filter_by(id=session["userid"]).first()
+                    modified = changes(user.username, datetime.datetime.now(), change)
+                    db.session.add(street)
+                    db.session.add(modified)
+                    db.session.commit()
+                    message="street was created"
+                    return redirect(url_for("views.admin_page"))
             else:
-                street = streets(revisedName, cityName)
-                change = f"Created Street: {revisedName}"
-                user = users.query.filter_by(id=session["userid"]).first()
-                modified = changes(user.username, datetime.datetime.now(), change)
-                db.session.add(street)
-                db.session.add(modified)
-                db.session.commit()
-                message="street was created"
-                return redirect(url_for("views.admin_page"))
+                return redirect(url_for("views.home"))
         except:
             return redirect(url_for("views.error"))
     else:
@@ -86,58 +90,61 @@ def add_address():
         try:
             allStreets = streets.query.all()
             user = users.query.filter_by(id=session["userid"]).first()
-            #On POST
-            if request.method == "POST":
-                #All Values that are pulled from the forms
-                streetnum = request.form["streetnum"]
-                city = request.form["city"]
-                street = request.form["street"]
-                meterNum = request.form["meterNum"]
-                meterSize = request.form["meterSize"]
-                tieOne = request.form["tieOne"]
-                tieTwo = request.form["tieTwo"]
-                notes = request.form["notes"]
+            if user.role >= 1:
+                #On POST
+                if request.method == "POST":
+                    #All Values that are pulled from the forms
+                    streetnum = request.form["streetnum"]
+                    city = request.form["city"]
+                    street = request.form["street"]
+                    meterNum = request.form["meterNum"]
+                    meterSize = request.form["meterSize"]
+                    tieOne = request.form["tieOne"]
+                    tieTwo = request.form["tieTwo"]
+                    notes = request.form["notes"]
 
-                image = request.files["img"]
-                
-                addressExists = addresses.query.filter_by(city=city, street=street,streetnum=streetnum).first()
-                #Checks if Address already exists
-                if addressExists:
-                    message="Address Already Exists"
+                    image = request.files["img"]
+                    
+                    addressExists = addresses.query.filter_by(city=city, street=street,streetnum=streetnum).first()
+                    #Checks if Address already exists
+                    if addressExists:
+                        message="Address Already Exists"
+                        return render_template("add_address.html", allStreets=allStreets, message=message)
+                    #Gets File Extension for image
+                    if(image.filename != ""):
+                        extension = os.path.splitext(image.filename)[1]
+                        image.filename = (streetnum+street+extension).replace(" ", "")
+                        image.save("./website/static/imgs/"+secure_filename(image.filename))
+                        address = addresses(streetnum, street, city, meterNum, meterSize, tieOne, tieTwo, notes, image.filename)
+
+                        #Resizes Image
+                        resized = Image.open("./website/static/imgs/"+image.filename)
+                        resized = resized.resize((400, 400))
+                        resized.save("./website/static/imgs/"+secure_filename(image.filename))
+                    else:
+                        #Creates Template for address to be committed
+                        address = addresses(streetnum, street, city, meterNum, meterSize, tieOne, tieTwo, notes, "placeholder.png")
+
+                    #Commits to Database
+                    change = f"Added Address {address.streetnum} {address.street} in {city}"
+                    modified = changes(user.username, datetime.datetime.now(), change)
+                    db.session.add(modified)
+                    db.session.add(address)
+                    db.session.commit()
+                    message="Successfully Created Address"
                     return render_template("add_address.html", allStreets=allStreets, message=message)
-                #Gets File Extension for image
-                if(image.filename != ""):
-                    extension = os.path.splitext(image.filename)[1]
-                    image.filename = (streetnum+street+extension).replace(" ", "")
-                    image.save("./website/static/imgs/"+secure_filename(image.filename))
-                    address = addresses(streetnum, street, city, meterNum, meterSize, tieOne, tieTwo, notes, image.filename)
-
-                    #Resizes Image
-                    resized = Image.open("./website/static/imgs/"+image.filename)
-                    resized = resized.resize((400, 400))
-                    resized.save("./website/static/imgs/"+secure_filename(image.filename))
+                #On GET
                 else:
-                    #Creates Template for address to be committed
-                    address = addresses(streetnum, street, city, meterNum, meterSize, tieOne, tieTwo, notes, "placeholder.png")
-
-                #Commits to Database
-                change = f"Added Address {address.streetnum} {address.street} in {city}"
-                modified = changes(user.username, datetime.datetime.now(), change)
-                db.session.add(modified)
-                db.session.add(address)
-                db.session.commit()
-                message="Successfully Created Address"
-                return render_template("add_address.html", allStreets=allStreets, message=message)
-            #On GET
+                    if len(allStreets) > 0:
+                        allCities = cities.query.all()
+                        streetData = {}
+                        for v, d in enumerate(allStreets):
+                            streetData[v] = [d.name, d.city]
+                        return render_template("add_address.html", allStreets=allStreets, allCities=allCities, streetData=streetData, user=user)
+                    else:
+                        return redirect(url_for("views.addresses"))
             else:
-                if len(allStreets) > 0:
-                    allCities = cities.query.all()
-                    streetData = {}
-                    for v, d in enumerate(allStreets):
-                        streetData[v] = [d.name, d.city]
-                    return render_template("add_address.html", allStreets=allStreets, allCities=allCities, streetData=streetData, admin=user.admin)
-                else:
-                    return redirect(url_for("views.addresses"))
+                return redirect(url_for("views.home"))
         except:
             return redirect(url_for("views.error"))
     else:
@@ -146,16 +153,16 @@ def add_address():
 @views.route("/addresses", methods=["GET", "POST"])
 def addressViewer():
     if "userid" in session:
+        user = users.query.filter_by(id=session["userid"]).first()
         try:
             allCities = cities.query.all()
             allStreets = streets.query.all()
             streetData = {}
-            user = users.query.filter_by(id=session["userid"]).first()
             for v, d in enumerate(allStreets):
                 streetData[v] = [d.name, d.city]
             if request.method == "GET":
                 address = addresses.query.all()
-                return render_template("addresses.html", admin=user.admin, allAddresses=address, streetData=streetData, allCities=allCities)
+                return render_template("addresses.html", user=user, allAddresses=address, streetData=streetData, allCities=allCities)
             else:
                 city=request.form["city"]
                 street=request.form.get("street")
@@ -164,7 +171,7 @@ def addressViewer():
                     address = addresses.query.filter_by(city=city, street=street).all()
                 else:
                     address = addresses.query.filter_by(city=city).all()
-                return render_template("addresses.html", admin=user.admin, allAddresses=address, streetData=streetData, allCities=allCities)
+                return render_template("addresses.html", user=user, allAddresses=address, streetData=streetData, allCities=allCities)
         except:
             return redirect(url_for("views.error"))
     else:
@@ -195,7 +202,7 @@ def make_changes(id):
                     if address.image != "placeholder.png":
                         address.image = rename+extension
                 else:
-                    return render_template("make_changes.html", s=street, a=address, admin=user.admin, message="Address Already Exists")
+                    return render_template("make_changes.html", s=street, a=address, user=user, message="Address Already Exists")
             image = request.files["img"]
             #Resizes Image if it exists
             if(image.filename != ""):
@@ -237,9 +244,9 @@ def make_changes(id):
             modified = changes(user.username, datetime.datetime.now(), change)
             db.session.add(modified)
             db.session.commit()
-            return render_template("make_changes.html", s=street, a=address, admin=user.admin, message="Address Successfully Modified")
+            return render_template("make_changes.html", s=street, a=address, user=user, message="Address Successfully Modified")
         else:
-            return render_template("make_changes.html", s=street, a=address, admin=user.admin)
+            return render_template("make_changes.html", s=street, a=address, user=user)
     else:
         return redirect(url_for("auth.login"))
 
@@ -247,7 +254,7 @@ def make_changes(id):
 def delete_address(id):
     if "userid" in session:
         user = users.query.filter_by(id=session["userid"]).first()
-        if user.admin:
+        if user.role >= 2:
             address = addresses.query.filter_by(id=id).first()
             filename = os.path.splitext(address.image)[0]
             dir = "./website/static/imgs/"
@@ -271,7 +278,7 @@ def delete_city():
         if request.method == "POST":
             cityName = request.form["cityDelete"]
             user = users.query.filter_by(id=session["userid"]).first()
-            if user.admin:
+            if user.role >= 2:
                 city = cities.query.filter_by(name=cityName).first()
                 cityStreets = streets.query.filter_by(city=cityName).all()
                 for c in cityStreets:
@@ -297,7 +304,7 @@ def delete_street():
         if request.method == "POST":
             streetName = request.form["streetDelete"]
             user = users.query.filter_by(id=session["userid"]).first()
-            if user.admin:
+            if user.role >= 2:
                 street = streets.query.filter_by(name=streetName).first()
                 print(street.name)
                 cityAddresses = addresses.query.filter_by(street=streetName, city=street.city)
@@ -320,7 +327,7 @@ def delete_user():
     if "userid" in session:
         if request.method == "POST":
             user = users.query.filter_by(id=session["userid"]).first()
-            if user.admin:
+            if user.role >= 2:
                 toDelete = request.form["deleteUser"]
                 deletedUser = users.query.filter_by(username=toDelete).first()
                 db.session.delete(deletedUser)
@@ -339,26 +346,36 @@ def address(id):
     if "userid" in session:
         user = users.query.filter_by(id=session["userid"]).first()
         address = addresses.query.filter_by(id=id).first()
-        return render_template("address.html", a = address, admin=user.admin)
+        return render_template("address.html", a = address, user=user)
     else:
         return redirect(url_for("auth.login"))
         
+#'Change Role'
 @views.route("/make_admin", methods=["POST"])
 def make_admin():
     if 'userid' in session:
-        try:
+        #try:
             user = users.query.filter_by(id=session["userid"]).first()
-            if(user.admin):
+            if(user.role >= 2):
                 name = request.form["username"]
+                role = request.form["role"]
                 newAdmin = users.query.filter_by(username=name).first()
-                newAdmin.admin = True
-                print(newAdmin.admin)
+                newAdmin.role = role
+                if(role == "0"):
+                    roleString = "Viewer"
+                elif(role == "1"):
+                    roleString = "Editor"
+                elif(role == "2"):
+                    roleString = "Admin"
+                print(roleString)
+                change = changes(user.username, datetime.datetime.now(), f"Changed Role of {newAdmin.username} to { roleString }")
+                db.session.add(change)
                 db.session.commit()
                 return redirect(url_for("views.admin_page"))
             else:
                 return redirect(url_for("views.home"))
-        except:
-            return redirect(url_for("views.error"))
+        #except:
+            #return redirect(url_for("views.error"))
     else:
         return redirect(url_for("auth.login"))
 
@@ -373,8 +390,8 @@ def admin_page():
             streetData = {}
             for v, d in enumerate(allStreets):
                 streetData[v] = [d.name, d.city]
-            if(user.admin):
-                return render_template("admin_page.html", curUser=user, admin=user.admin, allCities=allCities, allStreets=allStreets, allUsers=allUsers, streetData=streetData)
+            if(user.role >= 2):
+                return render_template("admin_page.html", curUser=user, user=user, allCities=allCities, allStreets=allStreets, allUsers=allUsers, streetData=streetData)
             else:
                 return redirect(url_for("views.home"))
         except:
@@ -387,7 +404,7 @@ def changelog():
     if 'userid' in session:
         user = users.query.filter_by(id=session["userid"]).first()
         allChanges = changes.query.order_by(changes.date.desc()).all()
-        return render_template("changelogs.html", admin=user.admin, allChanges=allChanges)
+        return render_template("changelogs.html", user=user, allChanges=allChanges)
     else:
         return redirect(url_for("auth.login"))
 
@@ -396,14 +413,13 @@ def changelog():
 def create_user():
     if "userid" in session:
         user = users.query.filter_by(id=session["userid"]).first()
-        isAdmin = user.admin
-        if isAdmin:
+        if user.role >= 2:
             id = str(uuid4())
             username = request.form["username"]
             password = request.form["password"]
             #Encrypts password with md5 hash
             password = md5(password.encode("utf-8")).hexdigest()
-            usr = users(id, username, password, False)
+            usr = users(id, username, password, 0)
             change = f"Added User {username}"
             modified = changes(user.username, datetime.datetime.now(), change)
             db.session.add(usr)

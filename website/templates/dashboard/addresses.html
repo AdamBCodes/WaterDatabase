@@ -21,12 +21,6 @@
         };
     </script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
-    <div class="main">
-        <div class="box">
-            <!--<i class="fa-solid fa-magnifying-glass icon"></i>-->
-            <!--<input type="text" class="input-field" placeholder="Search" />-->
-        </div>
-    </div>
     <form method="POST">
         <select id="city" name="city" onchange="loadStreets(event, {{ streetData }})" required>
             <option disabled selected value> -- Select A City -- </option>
@@ -39,7 +33,9 @@
         </select>
         <input type="submit" value="Search"/>
     </form>
-    <button onclick="location.href='/add_address';">Add New</button>
+    {% if user.role >= 1 %}
+        <button onclick="location.href='/add_address';">Add New</button>
+    {% endif %}
     <div class="addresses">
         {% if allAddresses|length != 0 %}
             {% for a in allAddresses %}

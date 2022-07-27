@@ -5,13 +5,13 @@ class users(db.Model):
     id = db.Column("id", db.VARCHAR(255), primary_key=True, nullable=False)
     username = db.Column("username", db.VARCHAR(255), nullable=False)
     password = db.Column("password", db.VARCHAR(255), nullable=False)
-    admin = db.Column("admin", db.Boolean, nullable=False)
+    role = db.Column("role", db.Integer, nullable=False)
 
-    def __init__(self, id, username, password, admin):
+    def __init__(self, id, username, password, role):
         self.id = id
         self.username = username
         self.password = password
-        self.admin = admin
+        self.role = role
 
 #Cities Table
 class cities(db.Model):

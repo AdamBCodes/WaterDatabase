@@ -15,7 +15,7 @@
             <a href="{{ url_for('views.addressViewer') }}">Addresses</a>
             <a href="{{ url_for('views.changelog') }}">Changelog</a>
             <a href="{{ url_for('auth.logout') }}">Logout</a>
-            {% if admin %}
+            {% if user.role == 2 %}
                 <hr />
                 <a href="{{ url_for('views.admin_page') }}">Admin</a>
             {% endif %}

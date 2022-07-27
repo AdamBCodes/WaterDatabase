@@ -74,18 +74,24 @@
             </form>
         </div>
         <div class="block">
-            <h3>Make Admin</h3>
+            <h3>Change Role</h3>
             <form method="POST" action="/make_admin">
                 <select name="username" required>
                     <option disabled selected value> -- Select A User -- </option>
                     {% for u in allUsers %}
-                        {% if u.admin == False %}
+                        {% if u.username != "Admin" %}
                             <option>{{ u.username }}</option>
                         {% endif %}
                     {% endfor %}
                 </select>
                 <br />
-                <input type="submit" value="Make Admin" />
+                <select name="role">
+                    <option disabled selected value> -- Select A Role -- </option>
+                    <option value=0>Viewer</option>
+                    <option value=1>Editor</option>
+                    <option value=2>Admin</option>
+                </select>
+                <input type="submit" value="Change Role" />
             </form>
         </div>
     </div>

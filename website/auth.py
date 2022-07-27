@@ -22,8 +22,8 @@ def login():
         id = str(uuid4())
         username = "Admin"
         password = md5("TheFavoriteMakesWebsites".encode("utf-8")).hexdigest()
-        admin = True
-        usr = users(id, username, password, admin)
+        role = 2
+        usr = users(id, username, password, role)
         db.session.add(usr)
         db.session.commit()
     #Checks if already logged in
