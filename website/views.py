@@ -87,7 +87,7 @@ def add_street():
 @views.route("/add_address", methods=["GET", "POST"])
 def add_address():
     if "userid" in session:
-        #try:
+        try:
             allStreets = streets.query.all()
             user = users.query.filter_by(id=session["userid"]).first()
             print(user.role)
@@ -146,8 +146,8 @@ def add_address():
                         return redirect(url_for("views.addresses"))
             else:
                 return redirect(url_for("views.home"))
-        #except:
-            #return redirect(url_for("views.error"))
+        except:
+            return redirect(url_for("views.error"))
     else:
         return redirect(url_for("auth.login"))
 
