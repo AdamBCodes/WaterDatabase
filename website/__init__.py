@@ -11,7 +11,6 @@ DB_NAME = "waterdb"
 def create_app():
     #Initializes App
     app = Flask(__name__)
-
     #Registers All Blueprints
     from .auth import auth
     from .views import views
