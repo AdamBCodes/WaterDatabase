@@ -24,7 +24,7 @@ def create_app():
     db.init_app(app)
     
     #Max Length of Cookie Session
-    app.permanent_session_lifetime = timedelta(minutes=20)
+    app.permanent_session_lifetime = timedelta(minutes=60)
 
     #Creates Database if it hasnt been already
     from .models import users, cities, streets, addresses, changes
