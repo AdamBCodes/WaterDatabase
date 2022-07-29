@@ -1,0 +1,1 @@
+This Project is for use in managing/organizing data for Water Treatment Plants. Includes Options for Tie 1, Tie 2, Notes, Meter Size, Meter Numbers, Image Uploading + Saving, City, Street, and Address managing/creating, Account and role systems(Admin, Viewer, Editor).
